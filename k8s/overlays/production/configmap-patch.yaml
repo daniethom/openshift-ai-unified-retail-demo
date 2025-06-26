@@ -1,0 +1,9 @@
+# k8s/overlays/production/configmap-patch.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mcp-servers-config
+  namespace: retail-ai-demo
+data:
+  # Patch the LLM endpoint to point to the real OpenShift Route for the kServe vLLM model
+  GRANITE_ENDPOINT: "https://granite-vllm-retail-ai-demo.apps.my-cluster.example.com"

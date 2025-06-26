@@ -1,0 +1,21 @@
+# k8s/overlays/local/deployment-patch.yaml
+# This patch applies to all deployments in the base
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: llm-server # This name will be ignored because we target by kind
+spec:
+  replicas: 1 # Ensure only one replica for local testing
+  template:
+    spec:
+      containers:
+      # The patch is applied to the container named 'llm-server', 'rag-server', etc.
+      # Ensure container names in base deployments are unique.
+      - name: llm-server # This name is a placeholder
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "250m"
+            memory: "256Mi"

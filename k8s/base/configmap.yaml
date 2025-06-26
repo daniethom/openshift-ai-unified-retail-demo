@@ -1,0 +1,16 @@
+# k8s/base/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mcp-servers-config
+  namespace: retail-ai-demo
+data:
+  # --- Default values, intended to be patched by overlays ---
+  
+  # RAG Settings
+  MILVUS_HOST: "milvus-service.retail-ai-demo.svc.cluster.local"
+  MILVUS_PORT: "19530"
+  EMBEDDING_MODEL: "all-MiniLM-L6-v2"
+  
+  # LLM Settings (placeholder to be patched)
+  GRANITE_ENDPOINT: "http://placeholder-llm-service:8080"

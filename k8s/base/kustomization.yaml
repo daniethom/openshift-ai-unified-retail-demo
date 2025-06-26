@@ -1,0 +1,16 @@
+# k8s/base/kustomization.yaml
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+- namespace.yaml
+- configmap.yaml
+- secret.yaml
+- llm-server-deployment.yaml
+- llm-server-service.yaml
+# - rag-server-deployment.yaml
+# - rag-server-service.yaml
+# - search-server-deployment.yaml
+# - search-server-service.yaml
+# - analytics-server-deployment.yaml
+# - analytics-server-service.yaml

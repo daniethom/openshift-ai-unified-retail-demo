@@ -1,0 +1,20 @@
+# k8s/overlays/local/kustomization.yaml
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# Inherit from the base configuration
+bases:
+- ../../base
+
+# Apply patches for the local environment
+patches:
+- path: configmap-patch.yaml
+  target:
+    kind: ConfigMap
+    name: mcp-servers-config
+- path: deployment-patch.yaml
+  target:
+    kind: Deployment
+    # Target all deployments by a label if they share one, or list them by name
+    # For this example, Kustomize will smartly apply the patch if the structure matches.
+    # To be more explicit, you could target each deployment by name.

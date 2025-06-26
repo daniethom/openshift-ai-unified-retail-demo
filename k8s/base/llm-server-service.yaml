@@ -1,0 +1,13 @@
+# k8s/base/llm-server-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: llm-server
+  namespace: retail-ai-demo
+spec:
+  selector:
+    app: llm-server
+  ports:
+  - protocol: TCP
+    port: 8001
+    targetPort: 8001

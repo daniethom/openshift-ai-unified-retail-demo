@@ -1,0 +1,21 @@
+# k8s/overlays/production/deployment-patch.yaml
+# This patch applies to all deployments in the base for the production environment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: llm-server # This name is a placeholder and will be ignored by the target
+spec:
+  replicas: 2 # Increase replicas for high availability in production
+  template:
+    spec:
+      containers:
+      # The patch is applied to the container by name.
+      # Ensure container names in base deployments are unique.
+      - name: llm-server # Placeholder name
+        resources:
+          requests:
+            cpu: "250m"
+            memory: "256Mi"
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
