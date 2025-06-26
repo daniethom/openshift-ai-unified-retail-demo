@@ -8,7 +8,7 @@
 
 ## 🏬 Overview
 
-The Meridian Retail Group AI System is a sophisticated multi-agent orchestration platform designed to revolutionize retail operations through intelligent automation. This demo showcases how AI agents can collaborate to handle complex retail scenarios including inventory management, dynamic pricing, customer service, and trend analysis.
+The Meridian Retail Group AI Demo is a sophisticated multi-agent orchestration platform designed to revolutionize retail operations through intelligent automation. This demo showcases how AI agents can collaborate to handle complex retail scenarios including inventory management, dynamic pricing, customer service, and trend analysis.
 
 ### 🎯 Key Features
 
@@ -78,7 +78,7 @@ graph TB
 ### Prerequisites
 
 - Python 3.11 or higher
-- Docker and Docker Compose
+- Podman and Podman Compose
 - Git
 - 8GB RAM minimum (16GB recommended)
 - OpenAI API key (for LLM capabilities)
@@ -118,7 +118,7 @@ graph TB
    ./scripts/setup.sh
    
    # Start MCP servers
-   docker-compose up -d
+   podman-compose up -d
    
    # Initialize data
    python scripts/init_data.py
@@ -438,8 +438,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - **Documentation**: [Full Docs](docs/)
 - **Issues**: [GitHub Issues](https://github.com/meridian-retail/ai-demo/issues)
-- **Email**: ai-support@meridianretail.co.za
-- **Slack**: #meridian-ai-support
+- **Email**: danie.thom@gmail.com 
+
 
 ## 🚦 Status
 
@@ -450,7 +450,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ---
 
 <div align="center">
-  <b>Meridian Retail Group</b><br>
+  <b>Bold Mountain</b><br>
   Empowering Retail with Intelligent AI<br>
   🇿🇦 Proudly South African
 </div>
