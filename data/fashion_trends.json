@@ -1,0 +1,112 @@
+[
+  {
+    "trend_id": "TRD01",
+    "title": "Power Tailoring & Suiting",
+    "description": "A focus on sharply tailored blazers, trousers, and full suits in both bold colors and classic neutrals. This trend empowers professional women with a confident silhouette.",
+    "season": "Winter 2025",
+    "target_demographic": "Professional Women",
+    "related_categories": ["Outerwear", "Bottoms"],
+    "key_colors": ["Burgundy", "Forest Green", "Camel", "Charcoal Grey"],
+    "key_materials": ["Wool Blends", "Tweed", "Crepe"],
+    "regional_relevance": "Strong in Cape Town and Johannesburg corporate hubs."
+  },
+  {
+    "trend_id": "TRD02",
+    "title": "Luxe Knitwear",
+    "description": "High-quality, comfortable knitwear such as cashmere scarves, merino wool sweaters, and knitted dresses are essential for a sophisticated winter look.",
+    "season": "Winter 2025",
+    "target_demographic": "Professional Women",
+    "related_categories": ["Tops", "Dresses", "Accessories"],
+    "key_colors": ["Cream", "Beige", "Navy Blue"],
+    "key_materials": ["Cashmere", "Merino Wool", "Alpaca Blends"],
+    "regional_relevance": "High demand in colder climates like Cape Town and high-altitude cities."
+  },
+  {
+    "trend_id": "TRD03",
+    "title": "Gorpcore & Utility Streetwear",
+    "description": "Inspired by outdoor and technical gear, this trend features functional items like cargo pants, utility vests, and technical jackets.",
+    "season": "All Year",
+    "target_demographic": "Youth",
+    "related_categories": ["Outerwear", "Bottoms", "Accessories"],
+    "key_colors": ["Olive Green", "Black", "Khaki", "Safety Orange"],
+    "key_materials": ["Nylon", "Ripstop", "Fleece"],
+    "regional_relevance": "Very popular in urban centers like Johannesburg and Pretoria."
+  },
+  {
+    "trend_id": "TRD04",
+    "title": "Y2K Revival",
+    "description": "The early 2000s are back with low-rise jeans, graphic baby tees, velour tracksuits, and bucket hats.",
+    "season": "Summer 2025/2026",
+    "target_demographic": "Youth",
+    "related_categories": ["Tops", "Bottoms", "Hats"],
+    "key_colors": ["Hot Pink", "Lime Green", "Lilac"],
+    "key_materials": ["Denim", "Velour", "Mesh"],
+    "regional_relevance": "Strong among students and youth nationwide."
+  },
+  {
+    "trend_id": "TRD05",
+    "title": "Bold Prints & Patterns",
+    "description": "A move towards vibrant, eye-catching patterns including animal prints, bold florals, and African-inspired geometric designs.",
+    "season": "Summer 2025/2026",
+    "target_demographic": "All",
+    "related_categories": ["Dresses", "Tops", "Swimwear"],
+    "key_colors": ["Vibrant Orange", "Royal Blue", "Emerald Green"],
+    "key_materials": ["Cotton", "Linen", "Viscose"],
+    "regional_relevance": "Especially popular in coastal cities like Durban and Cape Town for summer."
+  },
+  {
+    "trend_id": "TRD06",
+    "title": "Sustainable & Natural Fabrics",
+    "description": "Growing consumer demand for clothing made from organic cotton, linen, hemp, and recycled materials.",
+    "season": "All Year",
+    "target_demographic": "All",
+    "related_categories": ["All Apparel"],
+    "key_colors": ["Earthy Tones", "Undyed Naturals"],
+    "key_materials": ["Organic Cotton", "Linen", "Recycled Polyester"],
+    "regional_relevance": "A growing consideration for consumers nationwide, particularly in the Western Cape."
+  },
+  {
+    "trend_id": "TRD07",
+    "title": "Athleisure Dominance",
+    "description": "The fusion of athletic and leisure wear continues, with high-end track pants, performance t-shirts, and stylish sneakers being worn for everyday activities.",
+    "season": "All Year",
+    "target_demographic": "All",
+    "related_categories": ["All Apparel", "Footwear"],
+    "key_colors": ["Monochrome Black/White", "Grey Marl"],
+    "key_materials": ["Performance Fabrics", "Cotton Fleece"],
+    "regional_relevance": "Universal appeal across all major South African cities."
+  },
+  {
+    "trend_id": "TRD08",
+    "title": "The Leather Look",
+    "description": "Faux and real leather in the form of trousers, skirts, blazers, and trench coats is a key trend for a polished, edgy look.",
+    "season": "Winter 2025",
+    "target_demographic": "Professional Women",
+    "related_categories": ["Bottoms", "Outerwear", "Accessories"],
+    "key_colors": ["Black", "Chocolate Brown", "Burgundy"],
+    "key_materials": ["Faux Leather", "Genuine Leather"],
+    "regional_relevance": "Popular for evening and professional wear in Johannesburg and Cape Town."
+  },
+  {
+    "trend_id": "TRD09",
+    "title": "Oversized Silhouettes",
+    "description": "Comfort is key with oversized hoodies, t-shirts, and jackets dominating the streetwear scene.",
+    "season": "All Year",
+    "target_demographic": "Youth",
+    "related_categories": ["Outerwear", "Tops"],
+    "key_colors": ["Washed Black", "Neutral Tones"],
+    "key_materials": ["Heavyweight Cotton"],
+    "regional_relevance": "A core element of the youth fashion scene in all metro areas."
+  },
+  {
+    "trend_id": "TRD10",
+    "title": "Maximalist Accessories",
+    "description": "Statement accessories are on the rise, including chunky chains, large tote bags, and colorful, oversized sunglasses.",
+    "season": "Summer 2025/2026",
+    "target_demographic": "All",
+    "related_categories": ["Accessories"],
+    "key_colors": ["Gold", "Silver", "Bright Colors"],
+    "key_materials": ["Metal", "Acetate", "Leather"],
+    "regional_relevance": "Strong trend across all fashion-conscious demographics."
+  }
+]

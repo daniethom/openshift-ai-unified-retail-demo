@@ -1,0 +1,91 @@
+[
+  {
+    "insight_id": "SAM01",
+    "title": "E-commerce Growth in Major Metros",
+    "source": "SA Retail Insights Group",
+    "date": "2025-05-15",
+    "summary": "Online retail sales have seen a 22% year-on-year growth in South Africa, with the highest adoption rates in Gauteng and the Western Cape. Mobile commerce accounts for 65% of all online transactions.",
+    "data_points": [
+      {"metric": "YoY E-commerce Growth", "value": "22%"},
+      {"metric": "Mobile Commerce Share", "value": "65%"},
+      {"metric": "Highest Adoption Provinces", "value": ["Gauteng", "Western Cape"]}
+    ],
+    "regional_focus": "National"
+  },
+  {
+    "insight_id": "SAM02",
+    "title": "Demand for Sustainable and Local Products",
+    "source": "Green Consumer Report SA",
+    "date": "2025-04-30",
+    "summary": "There is a growing consumer preference for sustainably sourced and locally manufactured goods. 58% of consumers aged 25-45 state they are willing to pay a premium for products with clear ethical and environmental credentials.",
+    "data_points": [
+      {"metric": "Willingness to Pay Premium", "value": "58%"},
+      {"metric": "Key Demographic", "value": "25-45 years"},
+      {"metric": "Top Drivers", "value": ["Environmental Impact", "Support Local Economy"]}
+    ],
+    "regional_focus": "National"
+  },
+  {
+    "insight_id": "SAM03",
+    "title": "Youth Market (16-24) Spending Habits",
+    "source": "GenZ Pulse Africa",
+    "date": "2025-06-01",
+    "summary": "The youth market's purchasing decisions are heavily influenced by social media trends and brand authenticity. Streetwear and unique, limited-edition items are key drivers in this segment. Brand collaborations with local artists or influencers show a 40% higher engagement rate.",
+    "data_points": [
+      {"metric": "Primary Influence", "value": "Social Media"},
+      {"metric": "Key Categories", "value": ["Streetwear", "Sneakers"]},
+      {"metric": "Collaboration Engagement Lift", "value": "40%"}
+    ],
+    "regional_focus": "National"
+  },
+  {
+    "insight_id": "SAM04",
+    "title": "Homeware Market Expansion",
+    "source": "SA Home & Living Trends",
+    "date": "2025-03-20",
+    "summary": "The premium homeware market is expanding, driven by the work-from-home trend and a renewed focus on home improvement. Key growth areas include home office furniture, quality bedding, and decorative items.",
+    "data_points": [
+      {"metric": "Market Growth (YoY)", "value": "15%"},
+      {"metric": "Key Growth Drivers", "value": ["Remote Work", "Home Renovation"]},
+      {"metric": "Hot Categories", "value": ["Home Office", "Luxury Bedding", "Artisanal Decor"]}
+    ],
+    "regional_focus": "National"
+  },
+  {
+    "insight_id": "SAM05",
+    "title": "Athleisure and Wellness Market Consolidation",
+    "source": "SA Sports Retail Analysis",
+    "date": "2025-05-10",
+    "summary": "The athleisure trend remains strong, with consumers investing in versatile apparel that serves both athletic and casual purposes. The wellness category, including yoga mats and accessories, has grown by 30% since 2023.",
+    "data_points": [
+      {"metric": "Athleisure Market Stability", "value": "Strong"},
+      {"metric": "Wellness Accessories Growth (since 2023)", "value": "30%"},
+      {"metric": "Key Product", "value": "Multi-purpose sneakers"}
+    ],
+    "regional_focus": "National"
+  },
+  {
+    "insight_id": "SAM06",
+    "title": "Johannesburg Consumer Profile",
+    "source": "Gauteng Metro Analytics",
+    "date": "2025-02-15",
+    "summary": "Johannesburg consumers are fast-paced and brand-conscious, with a strong leaning towards international trends and luxury goods. There is a high demand for streetwear (Stratus) and professional fashion (Meridian Fashion).",
+    "data_points": [
+      {"metric": "Key Traits", "value": ["Brand-conscious", "Trend-driven"]},
+      {"metric": "High-Demand Brands", "value": ["Stratus", "Meridian Fashion"]}
+    ],
+    "regional_focus": "Gauteng"
+  },
+  {
+    "insight_id": "SAM07",
+    "title": "Cape Town Consumer Profile",
+    "source": "WC Retail Monitor",
+    "date": "2025-02-18",
+    "summary": "Cape Town's market shows a preference for a laid-back, quality-focused lifestyle. There is strong demand for outdoor and athletic gear (Vertex Sports) and sustainable, elegant fashion (Meridian Fashion).",
+    "data_points": [
+      {"metric": "Key Traits", "value": ["Lifestyle-focused", "Quality-conscious"]},
+      {"metric": "High-Demand Brands", "value": ["Vertex Sports", "Meridian Fashion"]}
+    ],
+    "regional_focus": "Western Cape"
+  }
+]

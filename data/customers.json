@@ -1,0 +1,137 @@
+[
+  {
+    "customer_id": "CUST001",
+    "first_name": "Sarah",
+    "last_name": "Johnson",
+    "email": "sarah.j@example.com",
+    "phone_number": "0821234567",
+    "location": "Cape Town, Western Cape",
+    "loyalty_tier": "Gold",
+    "preferred_brands": ["Meridian Fashion", "Casa Living"],
+    "purchase_history": [
+      {"product_id": "MF001", "quantity": 1, "date": "2025-06-15"},
+      {"product_id": "CL002", "quantity": 1, "date": "2025-05-20"}
+    ],
+    "demographics": {"age": 34, "gender": "Female"}
+  },
+  {
+    "customer_id": "CUST002",
+    "first_name": "Thabo",
+    "last_name": "Molefe",
+    "email": "thabo.m@example.com",
+    "phone_number": "0739876543",
+    "location": "Johannesburg, Gauteng",
+    "loyalty_tier": "Silver",
+    "preferred_brands": ["Stratus", "Vertex Sports"],
+    "purchase_history": [
+      {"product_id": "ST001", "quantity": 1, "date": "2025-06-10"},
+      {"product_id": "VS005", "quantity": 2, "date": "2025-06-10"}
+    ],
+    "demographics": {"age": 22, "gender": "Male"}
+  },
+  {
+    "customer_id": "CUST003",
+    "first_name": "Anika",
+    "last_name": "Patel",
+    "email": "anika.p@example.com",
+    "phone_number": "0845551234",
+    "location": "Durban, KwaZulu-Natal",
+    "loyalty_tier": "Bronze",
+    "preferred_brands": ["Casa Living"],
+    "purchase_history": [
+      {"product_id": "CL005", "quantity": 1, "date": "2025-05-05"}
+    ],
+    "demographics": {"age": 45, "gender": "Female"}
+  },
+  {
+    "customer_id": "CUST004",
+    "first_name": "Pieter",
+    "last_name": "van der Merwe",
+    "email": "pieter.vdm@example.com",
+    "phone_number": "0718889900",
+    "location": "Pretoria, Gauteng",
+    "loyalty_tier": "Gold",
+    "preferred_brands": ["Vertex Sports", "Meridian Fashion"],
+    "purchase_history": [
+      {"product_id": "VS001", "quantity": 1, "date": "2025-04-12"},
+      {"product_id": "VS006", "quantity": 2, "date": "2025-04-12"},
+      {"product_id": "MF002", "quantity": 1, "date": "2025-06-01"}
+    ],
+    "demographics": {"age": 39, "gender": "Male"}
+  },
+  {
+    "customer_id": "CUST005",
+    "first_name": "Naledi",
+    "last_name": "Khumalo",
+    "email": "naledi.k@example.com",
+    "phone_number": "0832345678",
+    "location": "Soweto, Gauteng",
+    "loyalty_tier": "Silver",
+    "preferred_brands": ["Stratus"],
+    "purchase_history": [
+      {"product_id": "ST002", "quantity": 1, "date": "2025-06-18"},
+      {"product_id": "ST004", "quantity": 1, "date": "2025-06-18"}
+    ],
+    "demographics": {"age": 19, "gender": "Female"}
+  },
+  {
+    "customer_id": "CUST006", "first_name": "David", "last_name": "Miller", "email": "david.m@example.com", "location": "Cape Town, Western Cape", "loyalty_tier": "Bronze", "preferred_brands": ["Vertex Sports"], "purchase_history": [{"product_id": "VS007", "quantity": 1, "date": "2025-06-20"}], "demographics": {"age": 28, "gender": "Male"}
+  },
+  {
+    "customer_id": "CUST007", "first_name": "Fatima", "last_name": "Khan", "email": "fatima.k@example.com", "location": "Johannesburg, Gauteng", "loyalty_tier": "Gold", "preferred_brands": ["Meridian Fashion", "Casa Living"], "purchase_history": [{"product_id": "MF003", "quantity": 1, "date": "2025-06-05"}, {"product_id": "CL001", "quantity": 2, "date": "2025-06-05"}], "demographics": {"age": 41, "gender": "Female"}
+  },
+  {
+    "customer_id": "CUST008", "first_name": "Ruan", "last_name": "Pretorius", "email": "ruan.p@example.com", "location": "Bloemfontein, Free State", "loyalty_tier": "Silver", "preferred_brands": ["Vertex Sports"], "purchase_history": [{"product_id": "VS002", "quantity": 3, "date": "2025-05-15"}], "demographics": {"age": 25, "gender": "Male"}
+  },
+  {
+    "customer_id": "CUST009", "first_name": "Lindiwe", "last_name": "Zulu", "email": "lindiwe.z@example.com", "location": "Durban, KwaZulu-Natal", "loyalty_tier": "Gold", "preferred_brands": ["Stratus", "Meridian Fashion"], "purchase_history": [{"product_id": "ST003", "quantity": 1, "date": "2025-05-30"}, {"product_id": "MF005", "quantity": 1, "date": "2025-05-30"}], "demographics": {"age": 27, "gender": "Female"}
+  },
+  {
+    "customer_id": "CUST010", "first_name": "Chris", "last_name": "Smit", "email": "chris.s@example.com", "location": "Port Elizabeth, Eastern Cape", "loyalty_tier": "Bronze", "preferred_brands": ["Casa Living"], "purchase_history": [{"product_id": "CL006", "quantity": 1, "date": "2025-06-22"}], "demographics": {"age": 55, "gender": "Male"}
+  },
+  {
+    "customer_id": "CUST011", "first_name": "Amahle", "last_name": "Nkosi", "email": "amahle.n@example.com", "location": "Johannesburg, Gauteng", "loyalty_tier": "Silver", "preferred_brands": ["Meridian Fashion"], "purchase_history": [{"product_id": "MF006", "quantity": 1, "date": "2025-06-11"}], "demographics": {"age": 31, "gender": "Female"}
+  },
+  {
+    "customer_id": "CUST012", "first_name": "Jason", "last_name": "Du Plessis", "email": "jason.dp@example.com", "location": "Cape Town, Western Cape", "loyalty_tier": "Gold", "preferred_brands": ["Stratus"], "purchase_history": [{"product_id": "ST006", "quantity": 2, "date": "2025-06-02"}, {"product_id": "ST005", "quantity": 1, "date": "2025-06-02"}], "demographics": {"age": 21, "gender": "Male"}
+  },
+  {
+    "customer_id": "CUST013", "first_name": "Megan", "last_name": "Govender", "email": "megan.g@example.com", "location": "Durban, KwaZulu-Natal", "loyalty_tier": "Bronze", "preferred_brands": ["Casa Living", "Meridian Fashion"], "purchase_history": [{"product_id": "CL004", "quantity": 3, "date": "2025-06-14"}], "demographics": {"age": 36, "gender": "Female"}
+  },
+  {
+    "customer_id": "CUST014", "first_name": "Siya", "last_name": "Botha", "email": "siya.b@example.com", "location": "Pretoria, Gauteng", "loyalty_tier": "Silver", "preferred_brands": ["Vertex Sports"], "purchase_history": [{"product_id": "VS004", "quantity": 1, "date": "2025-04-30"}], "demographics": {"age": 30, "gender": "Male"}
+  },
+  {
+    "customer_id": "CUST015", "first_name": "Chloe", "last_name": "Naidoo", "email": "chloe.n@example.com", "location": "Cape Town, Western Cape", "loyalty_tier": "Gold", "preferred_brands": ["Stratus"], "purchase_history": [{"product_id": "ST002", "quantity": 1, "date": "2025-06-19"}], "demographics": {"age": 18, "gender": "Female"}
+  },
+  {
+    "customer_id": "CUST016", "first_name": "Ben", "last_name": "Jacobs", "email": "ben.j@example.com", "location": "Johannesburg, Gauteng", "loyalty_tier": "Bronze", "preferred_brands": ["Meridian Fashion"], "purchase_history": [{"product_id": "MF004", "quantity": 1, "date": "2025-06-21"}], "demographics": {"age": 48, "gender": "Male"}
+  },
+  {
+    "customer_id": "CUST017", "first_name": "Olivia", "last_name": "Williams", "email": "olivia.w@example.com", "location": "Durban, KwaZulu-Natal", "loyalty_tier": "Silver", "preferred_brands": ["Casa Living"], "purchase_history": [{"product_id": "CL003", "quantity": 1, "date": "2025-06-12"}], "demographics": {"age": 60, "gender": "Female"}
+  },
+  {
+    "customer_id": "CUST018", "first_name": "Daniel", "last_name": "Fourie", "email": "daniel.f@example.com", "location": "Cape Town, Western Cape", "loyalty_tier": "Gold", "preferred_brands": ["Vertex Sports", "Stratus"], "purchase_history": [{"product_id": "VS003", "quantity": 1, "date": "2025-03-15"}], "demographics": {"age": 29, "gender": "Male"}
+  },
+  {
+    "customer_id": "CUST019", "first_name": "Zoe", "last_name": "van Wyk", "email": "zoe.vw@example.com", "location": "Johannesburg, Gauteng", "loyalty_tier": "Bronze", "preferred_brands": ["Meridian Fashion"], "purchase_history": [], "demographics": {"age": 33, "gender": "Female"}
+  },
+  {
+    "customer_id": "CUST020", "first_name": "Liam", "last_name": "Singh", "email": "liam.s@example.com", "location": "Pretoria, Gauteng", "loyalty_tier": "Silver", "preferred_brands": ["Stratus"], "purchase_history": [{"product_id": "ST001", "quantity": 1, "date": "2025-06-25"}], "demographics": {"age": 20, "gender": "Male"}
+  },
+  {
+    "customer_id": "CUST021", "first_name": "Isabella", "last_name": "Brown", "email": "isabella.b@example.com", "location": "Cape Town, Western Cape", "loyalty_tier": "Gold", "preferred_brands": ["Meridian Fashion"], "purchase_history": [{"product_id": "MF005", "quantity": 2, "date": "2025-06-16"}], "demographics": {"age": 42, "gender": "Female"}
+  },
+  {
+    "customer_id": "CUST022", "first_name": "Jacob", "last_name": "Mbeki", "email": "jacob.m@example.com", "location": "Johannesburg, Gauteng", "loyalty_tier": "Bronze", "preferred_brands": ["Vertex Sports"], "purchase_history": [], "demographics": {"age": 26, "gender": "Male"}
+  },
+  {
+    "customer_id": "CUST023", "first_name": "Mia", "last_name": "Coetzee", "email": "mia.c@example.com", "location": "Durban, KwaZulu-Natal", "loyalty_tier": "Silver", "preferred_brands": ["Stratus"], "purchase_history": [{"product_id": "ST003", "quantity": 1, "date": "2025-06-23"}], "demographics": {"age": 23, "gender": "Female"}
+  },
+  {
+    "customer_id": "CUST024", "first_name": "Lucas", "last_name": "Bester", "email": "lucas.b@example.com", "location": "Pretoria, Gauteng", "loyalty_tier": "Gold", "preferred_brands": ["Casa Living"], "purchase_history": [{"product_id": "CL001", "quantity": 1, "date": "2025-01-10"}, {"product_id": "CL005", "quantity": 1, "date": "2025-04-15"}, {"product_id": "CL006", "quantity": 2, "date": "2025-06-20"}], "demographics": {"age": 52, "gender": "Male"}
+  },
+  {
+    "customer_id": "CUST025", "first_name": "Ava", "last_name": "Pillay", "email": "ava.p@example.com", "location": "Cape Town, Western Cape", "loyalty_tier": "Bronze", "preferred_brands": ["Meridian Fashion"], "purchase_history": [], "demographics": {"age": 29, "gender": "Female"}
+  }
+]
