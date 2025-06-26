@@ -1,0 +1,483 @@
+# CrewAI Configuration for Meridian Retail Group AI System
+# Defines agents, tasks, and crew orchestration settings
+
+# Agent Definitions
+agents:
+  # Master Orchestrator
+  home_agent:
+    name: "HomeAgent"
+    role: "Chief AI Orchestrator"
+    goal: "Coordinate all AI agents to deliver comprehensive insights for retail operations"
+    backstory: |
+      You are the master orchestrator of Meridian Retail Group's AI system. 
+      You excel at understanding complex business queries, determining which specialized 
+      agents to engage, and synthesizing their responses into cohesive insights. You 
+      think strategically about retail operations and ensure all agents work together 
+      efficiently. You understand the interconnections between inventory, pricing, 
+      customer service, and trends.
+    verbose: true
+    allow_delegation: true
+    max_iter: 10
+    tools:
+      - analyze_query
+      - orchestrate_agents
+      - monitor_system
+      - generate_insights
+    capabilities:
+      - multi_agent_orchestration
+      - query_routing
+      - cross_functional_synthesis
+      - system_monitoring
+    
+  # Inventory Management Agent
+  inventory_agent:
+    name: "InventoryAgent"
+    role: "Inventory Management Specialist"
+    goal: "Optimize inventory levels to maximize availability while minimizing costs"
+    backstory: |
+      You are an expert inventory manager with deep knowledge of retail supply chain 
+      operations. You excel at balancing stock levels to meet customer demand while 
+      avoiding overstock. You understand seasonality, regional preferences, and can 
+      predict demand patterns accurately. Your recommendations always consider both 
+      cost efficiency and customer satisfaction.
+    verbose: true
+    allow_delegation: false
+    max_iter: 5
+    tools:
+      - check_stock_levels
+      - optimize_inventory
+      - forecast_demand
+      - generate_reorder_recommendations
+    capabilities:
+      - stock_management
+      - demand_forecasting
+      - supply_chain_optimization
+      - reorder_planning
+    mcp_servers:
+      - analytics_server
+      - data_warehouse
+    
+  # Pricing Agent
+  pricing_agent:
+    name: "PricingAgent"
+    role: "Revenue Optimization Specialist"
+    goal: "Maximize revenue and profitability through intelligent pricing strategies"
+    backstory: |
+      You are an expert in retail pricing strategy with deep understanding of market 
+      dynamics, consumer psychology, and revenue optimization. You excel at balancing 
+      profitability with competitiveness, considering factors like demand elasticity, 
+      inventory levels, and seasonal trends. You understand the South African retail 
+      market and can adapt global pricing strategies to local conditions.
+    verbose: true
+    allow_delegation: false
+    max_iter: 5
+    tools:
+      - optimize_pricing
+      - analyze_competition
+      - plan_promotions
+      - calculate_margins
+    capabilities:
+      - dynamic_pricing
+      - competitive_analysis
+      - promotion_planning
+      - margin_optimization
+    mcp_servers:
+      - analytics_server
+      - search_server
+    
+  # Customer Service Agent
+  customer_agent:
+    name: "CustomerAgent"
+    role: "Customer Experience Specialist"
+    goal: "Deliver exceptional customer service and build lasting relationships"
+    backstory: |
+      You are an expert customer service representative with deep empathy and 
+      understanding of customer needs. You excel at resolving issues, providing 
+      personalized recommendations, and creating positive experiences. You understand 
+      South African customer preferences and cultural nuances. You always prioritize 
+      customer satisfaction while balancing business objectives.
+    verbose: true
+    allow_delegation: false
+    max_iter: 5
+    tools:
+      - handle_customer_query
+      - personalized_recommendations
+      - handle_complaint
+      - loyalty_analysis
+    capabilities:
+      - customer_support
+      - personalization
+      - complaint_resolution
+      - loyalty_management
+    mcp_servers:
+      - llm_server
+      - analytics_server
+    
+  # Trend Analysis Agent
+  trend_agent:
+    name: "TrendAgent"
+    role: "Fashion Trend Analyst"
+    goal: "Identify and analyze fashion trends to guide inventory and marketing decisions"
+    backstory: |
+      You are an expert fashion trend analyst with deep knowledge of the South African 
+      market. You combine global fashion insights with local preferences, considering 
+      climate, culture, and economic factors. You excel at predicting upcoming trends 
+      and translating them into actionable recommendations for Meridian Retail Group 
+      brands.
+    verbose: true
+    allow_delegation: false
+    max_iter: 5
+    tools:
+      - analyze_fashion_trends
+      - seasonal_forecast
+      - competitor_analysis
+      - social_media_monitoring
+    capabilities:
+      - trend_forecasting
+      - market_intelligence
+      - seasonal_analysis
+      - competitor_tracking
+    mcp_servers:
+      - search_server
+      - rag_server
+      - analytics_server
+
+# Task Definitions
+tasks:
+  # Query Analysis Task
+  analyze_query:
+    description: "Analyze incoming query to determine complexity and routing"
+    agent: home_agent
+    expected_output: |
+      A comprehensive analysis including:
+      - Query classification and intent
+      - Required agents and data sources
+      - Orchestration strategy recommendation
+      - Expected complexity and timeline
+    tools:
+      - analyze_query
+    async_execution: false
+    
+  # Inventory Check Task
+  check_inventory:
+    description: "Check current inventory levels and availability"
+    agent: inventory_agent
+    expected_output: |
+      Detailed inventory status including:
+      - Current stock levels by location
+      - Availability status
+      - Reorder recommendations if needed
+      - Days of supply remaining
+    tools:
+      - check_stock_levels
+    async_execution: true
+    
+  # Price Optimization Task
+  optimize_prices:
+    description: "Optimize pricing strategy based on market conditions"
+    agent: pricing_agent
+    expected_output: |
+      Pricing recommendations including:
+      - Optimal price points
+      - Expected impact on revenue and margin
+      - Competitive positioning
+      - Implementation timeline
+    tools:
+      - optimize_pricing
+      - analyze_competition
+    async_execution: true
+    
+  # Customer Support Task
+  handle_customer:
+    description: "Handle customer inquiries and provide support"
+    agent: customer_agent
+    expected_output: |
+      Customer service response including:
+      - Direct answer to query
+      - Personalized recommendations
+      - Follow-up actions if needed
+      - Satisfaction assessment
+    tools:
+      - handle_customer_query
+      - personalized_recommendations
+    async_execution: true
+    
+  # Trend Analysis Task
+  analyze_trends:
+    description: "Analyze current and upcoming fashion trends"
+    agent: trend_agent
+    expected_output: |
+      Trend analysis report including:
+      - Key emerging trends
+      - Regional preferences
+      - Seasonal recommendations
+      - Inventory implications
+    tools:
+      - analyze_fashion_trends
+      - seasonal_forecast
+    async_execution: true
+    
+  # Multi-Agent Orchestration Task
+  orchestrate_response:
+    description: "Coordinate multiple agents to generate comprehensive response"
+    agent: home_agent
+    expected_output: |
+      Integrated response including:
+      - Synthesized insights from all relevant agents
+      - Cross-functional recommendations
+      - Prioritized action items
+      - Confidence assessment
+    tools:
+      - orchestrate_agents
+      - generate_insights
+    dependencies:
+      - analyze_query
+    async_execution: false
+    
+  # System Monitoring Task
+  monitor_health:
+    description: "Monitor system health and agent performance"
+    agent: home_agent
+    expected_output: |
+      System health report including:
+      - Agent status and performance metrics
+      - System bottlenecks or issues
+      - Optimization recommendations
+      - Alert summary
+    tools:
+      - monitor_system
+    async_execution: true
+    scheduled: true
+    schedule: "*/15 * * * *"  # Every 15 minutes
+
+# Crew Configuration
+crew:
+  name: "Meridian Retail AI Crew"
+  description: "Multi-agent AI system for comprehensive retail management"
+  
+  # Process configuration
+  process: "hierarchical"  # Options: sequential, hierarchical, consensual
+  
+  # Manager agent for hierarchical process
+  manager_agent: "home_agent"
+  
+  # Memory configuration
+  memory: true
+  memory_config:
+    provider: "rag"
+    embedding_model: "text-embedding-ada-002"
+    storage: "chromadb"
+    
+  # Collaboration settings
+  collaboration:
+    share_context: true
+    max_delegation_depth: 3
+    consensus_threshold: 0.7
+    
+  # Performance settings
+  performance:
+    max_parallel_tasks: 5
+    task_timeout: 300  # seconds
+    retry_failed_tasks: true
+    max_retries: 3
+    
+  # Output settings
+  output:
+    format: "structured"  # Options: structured, narrative, hybrid
+    include_confidence: true
+    include_sources: true
+    include_reasoning: true
+
+# Workflow Definitions
+workflows:
+  # Simple Query Workflow
+  simple_query:
+    description: "Handle simple single-agent queries"
+    steps:
+      - task: analyze_query
+        next: 
+          - condition: "complexity == 'simple'"
+            task: "route_to_agent"
+    
+  # Complex Query Workflow
+  complex_query:
+    description: "Handle complex multi-agent queries"
+    steps:
+      - task: analyze_query
+        parallel: false
+      - task: orchestrate_response
+        parallel: false
+        agents_involved:
+          - dynamic: true  # Determined by analysis
+    
+  # Customer Journey Workflow
+  customer_journey:
+    description: "Complete customer interaction flow"
+    steps:
+      - task: handle_customer
+        parallel: false
+      - task: check_inventory
+        parallel: true
+        condition: "product_query"
+      - task: analyze_trends
+        parallel: true
+        condition: "style_advice"
+      - task: optimize_prices
+        parallel: true
+        condition: "price_inquiry"
+    
+  # Daily Operations Workflow
+  daily_operations:
+    description: "Daily operational analysis and optimization"
+    steps:
+      - task: monitor_health
+        parallel: false
+      - task: check_inventory
+        parallel: true
+      - task: analyze_trends
+        parallel: true
+      - task: optimize_prices
+        parallel: true
+      - task: orchestrate_response
+        parallel: false
+        aggregate: true
+
+# Integration Settings
+integrations:
+  # MCP Server Configurations
+  mcp_servers:
+    analytics_server:
+      type: "analytics"
+      endpoint: "http://localhost:8001"
+      capabilities:
+        - "data_analysis"
+        - "metrics_calculation"
+        - "reporting"
+      
+    search_server:
+      type: "search"
+      endpoint: "http://localhost:8002"
+      capabilities:
+        - "web_search"
+        - "competitor_monitoring"
+        - "trend_discovery"
+      
+    rag_server:
+      type: "knowledge"
+      endpoint: "http://localhost:8003"
+      capabilities:
+        - "document_retrieval"
+        - "context_enhancement"
+        - "historical_analysis"
+      
+    llm_server:
+      type: "language"
+      endpoint: "http://localhost:8004"
+      capabilities:
+        - "text_generation"
+        - "sentiment_analysis"
+        - "language_understanding"
+    
+    data_warehouse:
+      type: "database"
+      endpoint: "http://localhost:8005"
+      capabilities:
+        - "data_storage"
+        - "query_execution"
+        - "real_time_updates"
+
+# Monitoring and Logging
+monitoring:
+  metrics:
+    - agent_response_time
+    - task_success_rate
+    - system_throughput
+    - error_rate
+    - resource_utilization
+    
+  alerts:
+    - type: "performance"
+      condition: "response_time > 5s"
+      severity: "warning"
+      
+    - type: "error"
+      condition: "error_rate > 0.1"
+      severity: "critical"
+      
+    - type: "availability"
+      condition: "agent_status == 'offline'"
+      severity: "critical"
+  
+  logging:
+    level: "INFO"
+    destinations:
+      - console
+      - file: "/var/log/meridian_ai/crew.log"
+      - monitoring_service: "datadog"
+
+# Security and Compliance
+security:
+  authentication:
+    enabled: true
+    method: "jwt"
+    
+  authorization:
+    rbac_enabled: true
+    default_role: "viewer"
+    
+  data_privacy:
+    pii_masking: true
+    audit_logging: true
+    retention_days: 90
+    
+  compliance:
+    frameworks:
+      - "POPIA"  # Protection of Personal Information Act (South Africa)
+      - "PCI-DSS"  # For payment data
+      - "ISO27001"  # Information security
+
+# Development and Testing
+development:
+  debug_mode: false
+  test_mode: false
+  mock_external_services: false
+  
+  test_scenarios:
+    - name: "simple_inventory_check"
+      query: "What's the stock level for product MF-BLZ-001?"
+      expected_agents: ["inventory_agent"]
+      
+    - name: "complex_business_analysis"
+      query: "Analyze our performance and recommend optimization strategies"
+      expected_agents: ["home_agent", "inventory_agent", "pricing_agent", "customer_agent", "trend_agent"]
+      
+    - name: "customer_complaint"
+      query: "I received a damaged product and want a refund"
+      expected_agents: ["customer_agent"]
+
+# Deployment Configuration
+deployment:
+  environment: "development"  # Options: development, staging, production
+  
+  scaling:
+    auto_scale: true
+    min_instances: 1
+    max_instances: 10
+    scale_threshold: 0.8  # CPU/Memory utilization
+    
+  resources:
+    cpu_request: "500m"
+    cpu_limit: "2000m"
+    memory_request: "1Gi"
+    memory_limit: "4Gi"
+    
+  health_checks:
+    liveness_probe:
+      endpoint: "/health"
+      interval: 30
+      timeout: 10
+      
+    readiness_probe:
+      endpoint: "/ready"
+      interval: 10
+      timeout: 5
