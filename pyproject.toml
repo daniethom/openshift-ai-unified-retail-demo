@@ -1,0 +1,80 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "meridian-retail-ai-demo"
+version = "1.0.0-demo"
+description = "A comprehensive demonstration of MCP and Multi-Agent AI capabilities using Red Hat OpenShift AI for retail operations."
+readme = "README.md"
+authors = [
+  { name = "Meridian Retail AI Team", email = "ai-danie.thom@gmail.com" },
+]
+license = { text = "MIT" }
+requires-python = ">=3.11"
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+
+# Core dependencies for the application to run
+dependencies = [
+    "fastapi",
+    "uvicorn[standard]",
+    "pydantic",
+    "crewai",
+    "streamlit",
+    "python-dotenv",
+    "numpy",
+    "requests",
+    "httpx",
+    # Dependencies for RAG and Search functionality
+    "tavily-python", 
+    "pymilvus",
+    "llama-index",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/daniethom/openshift-ai-unified-demo"
+"Bug Tracker" = "https://github.com/daniethom/openshift-ai-unified-demo/issues"
+
+[project.optional-dependencies]
+# Dependencies for development, linting, formatting, and testing
+dev = [
+    "pytest",
+    "pytest-asyncio",
+    "pytest-cov",
+    "black",
+    "ruff",
+    "mypy",
+]
+
+[tool.setuptools]
+# Specifies the packages to include in the distribution
+packages = [
+    "agents",
+    "mcp_servers",
+    "streamlit_app",
+    "rag",
+    "scripts"
+]
+
+[tool.black]
+# Configuration for the Black code formatter
+line-length = 88
+target-version = ['py311']
+
+[tool.ruff]
+# Configuration for the Ruff linter
+line-length = 88
+select = [
+    "E",  # pycodestyle errors
+    "F",  # pyflakes
+    "W",  # pycodestyle warnings
+    "I",  # isort
+]
