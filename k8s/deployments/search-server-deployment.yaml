@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: search-server
+  namespace: retail-ai-demo
+  labels:
+    app: search-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: search-server
+  template:
+    metadata:
+      labels:
+        app: search-server
+    spec:
+      containers:
+      - name: search-server
+        image: image-registry.openshift-image-registry.svc:5000/retail-ai-demo/meridian-retail-ai:latest
+        command: ["uvicorn", "mcp_servers.search_server:app", "--host", "0.0.0.0", "--port", "8003"]
+        ports:
+        - containerPort: 8003
+        envFrom:
+        - configMapRef:
+            name: mcp-servers-config
+        - secretRef:
+            name: mcp-servers-secrets

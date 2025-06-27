@@ -1,0 +1,12 @@
+# k8s/configmaps/streamlit-ui-config.yaml
+# This ConfigMap holds the configuration for the Streamlit UI component.
+# Its primary purpose is to tell the frontend where to find the backend API.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: streamlit-ui-config
+  namespace: retail-ai-demo
+data:
+  # This URL points to the internal Kubernetes service for the main application
+  # (e.g., the HomeAgent's service), allowing the UI to send it queries.
+  API_BASE_URL: "http://home-agent-service:8080"

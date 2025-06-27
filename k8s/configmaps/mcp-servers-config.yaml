@@ -1,0 +1,29 @@
+# k8s/configmaps/mcp-servers-config.yaml
+# This ConfigMap holds non-sensitive configuration data for the MCP servers and other components.
+# It is intended to be the 'base' configuration, which can be patched by Kustomize overlays.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mcp-servers-config
+  namespace: retail-ai-demo
+data:
+  # --- LLM Configuration ---
+  # This endpoint will be overridden by Kustomize for local and production deployments.
+  GRANITE_ENDPOINT: "http://placeholder-llm-service:8080"
+
+  # --- RAG / Milvus Configuration ---
+  MILVUS_HOST: "milvus-service"
+  MILVUS_PORT: "19530"
+  EMBEDDING_MODEL: "all-MiniLM-L6-v2"
+
+  # --- MCP Server Ports ---
+  # These define the default internal ports for the services.
+  LLM_MCP_PORT: "8001"
+  RAG_MCP_PORT: "8002"
+  SEARCH_MCP_PORT: "8003"
+  ANALYTICS_MCP_PORT: "8004"
+
+  # --- Debugging & Logging ---
+  LOG_LEVEL: "INFO"
+  MERIDIAN_DEBUG: "false"
+

@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: streamlit-ui
+  namespace: retail-ai-demo
+  labels:
+    app: streamlit-ui
+spec:
+  selector:
+    app: streamlit-ui
+  ports:
+  - name: http
+    protocol: TCP
+    port: 8501
+    targetPort: 8501

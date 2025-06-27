@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rag-server
+  namespace: retail-ai-demo
+  labels:
+    app: rag-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rag-server
+  template:
+    metadata:
+      labels:
+        app: rag-server
+    spec:
+      containers:
+      - name: rag-server
+        image: image-registry.openshift-image-registry.svc:5000/retail-ai-demo/meridian-retail-ai:latest
+        command: ["uvicorn", "mcp_servers.rag_server:app", "--host", "0.0.0.0", "--port", "8002"]
+        ports:
+        - containerPort: 8002
+        envFrom:
+        - configMapRef:
+            name: mcp-servers-config
