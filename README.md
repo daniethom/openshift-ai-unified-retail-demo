@@ -1,456 +1,202 @@
-# Meridian Retail Group - AI Multi-Agent System
+Meridian Retail Group - AI Multi-Agent System
+🎯 Overview
+This project is a comprehensive demonstration of a unified AI platform built for the fictional Meridian Retail Group. It showcases advanced AI-powered retail operations by combining:
 
-![Meridian AI](https://img.shields.io/badge/Meridian-AI%20System-blue)
-![Python](https://img.shields.io/badge/Python-3.11+-green)
-![CrewAI](https://img.shields.io/badge/CrewAI-Latest-orange)
-![MCP](https://img.shields.io/badge/MCP-Enabled-purple)
-![Status](https://img.shields.io/badge/Status-Demo-yellow)
+Multi-Agent Collaboration using CrewAI for specialized retail tasks.
 
-## 🏬 Overview
+MCP (Model Context Protocol) for standardized and decoupled AI tool integration.
 
-The Meridian Retail Group AI Demo is a sophisticated multi-agent orchestration platform designed to revolutionize retail operations through intelligent automation. This demo showcases how AI agents can collaborate to handle complex retail scenarios including inventory management, dynamic pricing, customer service, and trend analysis.
+RAG (Retrieval-Augmented Generation) with a Milvus vector database for deep knowledge retrieval.
 
-### 🎯 Key Features
+Real-time Search Integration via the Tavily API.
 
-- **Multi-Agent Orchestration**: Intelligent coordination between specialized AI agents
-- **Real-time Analytics**: Live insights into inventory, pricing, and customer behavior
-- **MCP Integration**: Model Context Protocol for enhanced AI capabilities
-- **South African Market Focus**: Localized for SA retail conditions and compliance
-- **Scalable Architecture**: Kubernetes-ready for enterprise deployment
+Enterprise-Grade LLM Hosting on OpenShift AI with kServe and vLLM.
 
-## 🏗️ Architecture
+🏢 Demo Company: Meridian Retail Group
+Meridian Retail Group is a fictional South African retail conglomerate with four distinct brands:
 
-### System Overview
+Meridian Fashion: Contemporary fashion for professionals.
 
-```mermaid
+Stratus: Youth-oriented streetwear and trends.
+
+Casa Living: Premium homeware and decor.
+
+Vertex Sports: Athletic and outdoor gear.
+
+🚀 Quick Start
+Prerequisites
+Python 3.11+ (or 3.13.5 with pyenv)
+
+uv package manager (recommended) or pip
+
+Docker and Docker Compose (for local MCP server testing)
+
+OpenShift 4.18+ with GPU support (for full deployment)
+
+Tavily API key
+
+Local Development Setup
+Clone the Repository
+
+git clone [https://github.com/YOUR_USERNAME/openshift-ai-unified-demo.git](https://github.com/YOUR_USERNAME/openshift-ai-unified-demo.git)
+cd openshift-ai-unified-demo
+
+Set Up Environment
+
+# Create and activate a virtual environment
+python -m venv .venv
+source .venv/bin/activate
+
+Install Dependencies
+
+# Using uv (recommended)
+uv pip install -e ".[dev]"
+
+# Or using pip
+pip install -e ".[dev]"
+
+Configure Environment Variables
+
+cp .env.example .env
+# Edit the .env file with your TAVILY_API_KEY and other settings
+
+Run the Application
+
+# This will launch the Streamlit UI
+streamlit run streamlit_app/app.py
+
+🏗️ Architecture
 graph TB
-    subgraph "User Interface"
+    subgraph "Web Interface"
         UI[Streamlit Dashboard]
     end
     
-    subgraph "Orchestration Layer"
-        HA[Home Agent - Orchestrator]
+    subgraph "Multi-Agent Layer (CrewAI)"
+        HOME[Home Agent - Orchestrator]
+        TREND[Trend Agent]
+        INV[Inventory Agent]
+        CUST[Customer Agent]
+        PRICE[Pricing Agent]
     end
     
-    subgraph "Specialized Agents"
-        IA[Inventory Agent]
-        PA[Pricing Agent]
-        CA[Customer Agent]
-        TA[Trend Agent]
+    subgraph "MCP Protocol Layer"
+        MCP_LLM[LLM MCP Server]
+        MCP_RAG[RAG MCP Server]
+        MCP_SEARCH[Search MCP Server]
+        MCP_ANALYTICS[Analytics MCP Server]
     end
     
-    subgraph "MCP Servers"
-        AS[Analytics Server]
-        SS[Search Server]
-        RS[RAG Server]
-        LS[LLM Server]
-        DS[Data Store]
+    subgraph "Backend Services & Data"
+        LLM[Granite 3B / Llama 3.2]
+        MILVUS[Milvus Vector DB]
+        TAVILY[Tavily Search API]
+        DATA[JSON Data Files]
     end
     
-    UI --> HA
-    HA --> IA
-    HA --> PA
-    HA --> CA
-    HA --> TA
+    subgraph "Platform (OpenShift AI)"
+        KSERVE[kServe & vLLM]
+        GPU[NVIDIA GPU Resources]
+    end
     
-    IA --> AS
-    IA --> DS
-    PA --> AS
-    PA --> SS
-    CA --> LS
-    CA --> AS
-    TA --> SS
-    TA --> RS
-```
+    UI --> HOME
+    HOME --> TREND & INV & CUST & PRICE
+    TREND & INV & CUST & PRICE --> MCP_LLM & MCP_RAG & MCP_SEARCH & MCP_ANALYTICS
+    MCP_LLM --> LLM
+    MCP_RAG --> MILVUS
+    MCP_SEARCH --> TAVILY
+    MCP_ANALYTICS --> DATA
+    LLM --> KSERVE
+    KSERVE --> GPU
 
-### Agent Capabilities
-
-| Agent | Role | Key Capabilities |
-|-------|------|------------------|
-| **Home Agent** | Chief Orchestrator | Query analysis, Multi-agent coordination, System monitoring |
-| **Inventory Agent** | Supply Chain Expert | Stock management, Demand forecasting, Reorder optimization |
-| **Pricing Agent** | Revenue Optimizer | Dynamic pricing, Competitive analysis, Promotion planning |
-| **Customer Agent** | Service Specialist | Query resolution, Personalization, Loyalty management |
-| **Trend Agent** | Market Analyst | Fashion forecasting, Seasonal analysis, Competitor tracking |
-
-## 🚀 Quick Start
-
-### Prerequisites
-
-- Python 3.11 or higher
-- Podman and Podman Compose
-- Git
-- 8GB RAM minimum (16GB recommended)
-- OpenAI API key (for LLM capabilities)
-
-### Installation
-
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/meridian-retail/ai-demo.git
-   cd ai-demo
-   ```
-
-2. **Set up environment**
-   ```bash
-   # Create virtual environment
-   python -m venv venv
-   
-   # Activate virtual environment
-   # On Windows:
-   venv\Scripts\activate
-   # On macOS/Linux:
-   source venv/bin/activate
-   
-   # Install dependencies
-   pip install -e .
-   ```
-
-3. **Configure environment variables**
-   ```bash
-   cp .env.example .env
-   # Edit .env with your configuration
-   ```
-
-4. **Initialize the system**
-   ```bash
-   # Run setup script
-   ./scripts/setup.sh
-   
-   # Start MCP servers
-   podman-compose up -d
-   
-   # Initialize data
-   python scripts/init_data.py
-   ```
-
-5. **Launch the application**
-   ```bash
-   streamlit run streamlit_app/app.py
-   ```
-
-   Navigate to `http://localhost:8501` in your browser.
-
-## 📖 Usage Guide
-
-### Basic Operations
-
-#### 1. Simple Inventory Check
-```python
-# Query: "What's the stock level for blazer MF-BLZ-001 in Cape Town?"
-# Agents involved: Inventory Agent
-# Response includes: Current stock, reorder status, availability
-```
-
-#### 2. Price Optimization
-```python
-# Query: "Optimize pricing for summer collection with 20% margin target"
-# Agents involved: Pricing Agent, Inventory Agent, Trend Agent
-# Response includes: Recommended prices, expected impact, implementation plan
-```
-
-#### 3. Customer Service
-```python
-# Query: "Customer complaint about late delivery, order #12345"
-# Agents involved: Customer Agent
-# Response includes: Resolution steps, compensation, follow-up plan
-```
-
-#### 4. Complex Business Analysis
-```python
-# Query: "Analyze Q4 performance and recommend strategies for Q1"
-# Agents involved: All agents coordinated by Home Agent
-# Response includes: Comprehensive analysis, cross-functional insights, action items
-```
-
-### Advanced Features
-
-#### Multi-Agent Orchestration
-The Home Agent automatically determines query complexity and orchestrates responses:
-
-- **Simple Queries**: Direct routing to single agent
-- **Moderate Queries**: Parallel processing with 2-3 agents
-- **Complex Queries**: Hierarchical processing with lead agent
-- **Advanced Queries**: Adaptive strategy with dynamic agent engagement
-
-#### Real-time Monitoring
-Access the monitoring dashboard to view:
-- Agent performance metrics
-- System health status
-- Query processing times
-- Success rates and error tracking
-
-## 🛠️ Development
-
-### Project Structure
-```
+📁 Repository Structure
 meridian-retail-ai/
-├── agents/                    # Agent implementations
-│   ├── base_agent.py         # Base agent framework
-│   ├── home_agent.py         # Orchestrator agent
-│   ├── inventory_agent.py    # Inventory management
-│   ├── pricing_agent.py      # Pricing optimization
-│   ├── customer_agents.py    # Customer service
-│   └── trend_agent.py        # Trend analysis
-├── mcp_servers/              # MCP server implementations
-│   ├── analytics_server.py   # Analytics MCP server
-│   ├── search_server.py      # Search MCP server
-│   ├── rag_server.py         # RAG MCP server
-│   └── llm_server.py         # LLM MCP server
-├── streamlit_app/            # Web interface
-│   ├── app.py               # Main application
-│   └── pages/               # Dashboard pages
-├── data/                     # Data files
-│   ├── products.json        # Product catalog
-│   ├── customers.json       # Customer data
-│   └── market_data.json     # Market information
-├── docs/                     # Documentation
-├── tests/                    # Test suite
-└── scripts/                  # Utility scripts
-```
+├── README.md
+├── pyproject.toml
+├── .env.example
+│
+├── agents/                 # Agent implementations (home, inventory, etc.)
+├── data/                   # Synthetic JSON data (products, customers, etc.)
+├── docs/                   # Documentation (architecture, guides)
+│
+├── k8s/                    # Kubernetes manifests (Kustomize)
+│   ├── base/               # Base configs (namespace, deployments, services)
+│   └── overlays/
+│       ├── local/          # Patches for OpenShift Local (CRC)
+│       └── production/     # Patches for full OpenShift AI cluster
+│
+├── mcp_servers/            # FastAPI MCP servers (llm, rag, search, analytics)
+├── scripts/                # Automation scripts (deploy, setup, etc.)
+├── streamlit_app/          # Streamlit web interface code
+└── tests/                  # Pytest suites (unit, integration)
 
-### Adding New Agents
+🎯 Demo Scenarios
+1. Fashion Trend Analysis (Multi-Agent + RAG)
+Query: "What winter fashion trends should our Cape Town stores focus on for professional women?"
+Agents: Trend, Customer, Inventory, Pricing
+Result: A comprehensive report with actionable inventory and pricing recommendations.
 
-1. Create new agent class inheriting from `BaseAgent`
-2. Define agent capabilities in `__init__`
-3. Implement `process_query` method
-4. Add agent to `crew_config.yaml`
-5. Register in Home Agent's registry
+2. Cross-Sell Opportunity (MCP Integration)
+Query: "Customer Sarah Johnson just bought a winter coat. What should we recommend next?"
+Tools: RAG (purchase history), Search (matching accessories), Analytics (personalization).
+Result: Personalized product recommendations with a high probability of conversion.
 
-Example:
-```python
-class NewAgent(BaseAgent):
-    def __init__(self, mcp_servers, data_store):
-        capabilities = [
-            AgentCapability(
-                name="new_capability",
-                description="Description of capability",
-                input_schema={...},
-                output_schema={...}
-            )
-        ]
-        super().__init__(
-            name="NewAgent",
-            role="Role Description",
-            goal="Agent Goal",
-            backstory="Agent Backstory",
-            capabilities=capabilities
-        )
-```
+3. Dynamic Inventory Optimization (Agent Orchestration)
+Query: "Optimize inventory for the upcoming summer season across all Johannesburg stores."
+Process: Trend forecasting, historical sales analysis, and dynamic price optimization.
+Result: A detailed inventory plan with quantities, timing, and pricing strategies.
 
-### Testing
+4. Customer Complaint Resolution (Advanced Orchestration)
+Query: "A high-value customer is complaining about a delayed delivery."
+Strategy: The Home Agent coordinates the Customer, Inventory, and Pricing agents to analyze the issue, find a solution, and calculate appropriate compensation to retain the customer.
+Result: An immediate resolution with a retention strategy.
 
-Run the test suite:
-```bash
-# Run all tests
-pytest
+🌍 Deployment
+Local Development (CRC)
+For testing on a constrained hardware environment like a laptop running OpenShift Local.
 
-# Run specific test category
-pytest tests/agents/
-pytest tests/integration/
-
-# Run with coverage
-pytest --cov=agents --cov-report=html
-```
-
-## 🌍 Deployment
-
-### Local Deployment
-```bash
+# Deploys with resource-friendly settings
 ./scripts/deploy-local.sh
-```
 
-### Kubernetes/OpenShift Deployment
-```bash
-# Configure your cluster
-kubectl config use-context your-cluster
+Production OpenShift
+For the full demo on an OpenShift AI cluster with GPU resources.
 
-# Deploy
+# Deploys with production-ready settings (replicas, resources, real endpoints)
 ./scripts/deploy-openshift.sh
 
-# Verify deployment
-kubectl get pods -n meridian-ai
-```
+🔧 Configuration
+Key configuration is managed through environment variables, loaded from the .env file for local development and from ConfigMaps/Secrets in OpenShift.
 
-### Environment Configuration
+# API Keys
+TAVILY_API_KEY=your_key_here
 
-#### Development
-- Single instance of each component
-- Local data storage
-- Debug logging enabled
+# OpenShift Settings
+OPENSHIFT_NAMESPACE=retail-ai-demo
+GRANITE_ENDPOINT=http://granite-service:8080 # Patched by Kustomize
 
-#### Production
-- Auto-scaling enabled (1-10 instances)
-- Persistent volume storage
-- Monitoring and alerting active
-- SSL/TLS encryption
-- RBAC enabled
+# MCP Server Ports
+LLM_MCP_PORT=8001
+RAG_MCP_PORT=8002
+SEARCH_MCP_PORT=8003
+ANALYTICS_MCP_PORT=8004
 
-## 📊 Demo Scenarios
+# RAG Settings
+MILVUS_HOST=milvus-service
+MILVUS_PORT=19530
 
-### Scenario 1: Seasonal Planning
-**Query**: "Prepare for summer season - analyze trends, optimize inventory, and plan pricing strategy"
+🧪 Testing
+The project includes a comprehensive test suite using Pytest.
 
-**Demonstrates**:
-- Multi-agent collaboration
-- Predictive analytics
-- Strategic planning
+# Run all tests
+make test
 
-### Scenario 2: Customer Retention
-**Query**: "Identify at-risk platinum customers and create retention campaign"
+# Run only unit tests
+pytest tests/unit
 
-**Demonstrates**:
-- Customer analytics
-- Personalization
-- Loyalty management
+# Run only integration tests
+pytest tests/integration
 
-### Scenario 3: Real-time Operations
-**Query**: "Current system status with optimization recommendations"
+🤝 Contributing
+We welcome contributions! Please see our CONTRIBUTING.md for details on our development workflow and code standards.
 
-**Demonstrates**:
-- System monitoring
-- Performance optimization
-- Operational insights
-
-## 🔧 Configuration
-
-### Agent Configuration (crew_config.yaml)
-```yaml
-agents:
-  inventory_agent:
-    name: "InventoryAgent"
-    role: "Inventory Management Specialist"
-    capabilities:
-      - stock_management
-      - demand_forecasting
-    mcp_servers:
-      - analytics_server
-      - data_warehouse
-```
-
-### MCP Server Configuration
-```yaml
-mcp_servers:
-  analytics_server:
-    endpoint: "http://localhost:8001"
-    capabilities:
-      - data_analysis
-      - metrics_calculation
-```
-
-### Performance Tuning
-```yaml
-performance:
-  max_parallel_tasks: 5
-  task_timeout: 300
-  retry_failed_tasks: true
-  max_retries: 3
-```
-
-## 📈 Monitoring and Analytics
-
-### Key Metrics
-- **Response Time**: Average query processing time
-- **Success Rate**: Percentage of successful query resolutions
-- **Agent Utilization**: Workload distribution across agents
-- **System Health**: Overall system performance score
-
-### Accessing Metrics
-1. Dashboard: `http://localhost:8501/analytics`
-2. API: `GET /api/metrics`
-3. Logs: `/var/log/meridian_ai/`
-
-## 🔒 Security
-
-### Authentication
-- JWT-based authentication
-- Role-based access control (RBAC)
-- API key management
-
-### Data Privacy
-- PII masking enabled
-- Audit logging
-- POPIA compliance (South African privacy law)
-- 90-day data retention
-
-### Compliance
-- POPIA (Protection of Personal Information Act)
-- PCI-DSS for payment data
-- ISO 27001 for information security
-
-## 🐛 Troubleshooting
-
-### Common Issues
-
-1. **Agent Not Responding**
-   ```bash
-   # Check agent status
-   curl http://localhost:8501/api/agents/status
-   
-   # Restart specific agent
-   docker-compose restart inventory_agent
-   ```
-
-2. **MCP Connection Failed**
-   ```bash
-   # Verify MCP servers are running
-   docker-compose ps
-   
-   # Check MCP logs
-   docker-compose logs mcp_analytics
-   ```
-
-3. **High Response Times**
-   - Check system resources
-   - Review agent workload distribution
-   - Enable performance profiling
-
-### Debug Mode
-```python
-# Enable debug logging
-export MERIDIAN_DEBUG=true
-export LOG_LEVEL=DEBUG
-```
-
-## 🤝 Contributing
-
-We welcome contributions! Please see our [Contributing Guide](docs/CONTRIBUTING.md) for details.
-
-### Development Workflow
-1. Fork the repository
-2. Create feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit changes (`git commit -m 'Add AmazingFeature'`)
-4. Push to branch (`git push origin feature/AmazingFeature`)
-5. Open Pull Request
-
-## 📝 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgments
-
-- CrewAI team for the multi-agent framework
-- Anthropic for MCP (Model Context Protocol)
-- Streamlit for the web framework
-- The open-source community
-
-## 📞 Support
-
-- **Documentation**: [Full Docs](docs/)
-- **Issues**: [GitHub Issues](https://github.com/meridian-retail/ai-demo/issues)
-- **Email**: danie.thom@gmail.com 
-
-
-## 🚦 Status
-
-- **Current Version**: 1.0.0-demo
-- **Status**: Demo/Prototype
-- **Production Ready**: Q2 2025 (estimated)
-
----
-
-<div align="center">
-  <b>Bold Mountain</b><br>
-  Empowering Retail with Intelligent AI<br>
-  🇿🇦 Proudly South African
-</div>
+📄 License
+This project is licensed under the MIT License. See the LICENSE file for details.
