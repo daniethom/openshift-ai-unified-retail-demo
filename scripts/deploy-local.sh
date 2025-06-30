@@ -49,3 +49,5 @@ fi
 echo ""
 success "Local deployment script finished."
 
+echo "--- Applying Database Priming Job ---"
+kubectl apply -f k8s/base/priming-job.yaml

@@ -2,7 +2,15 @@
 Meridian Retail AI Demo - Streamlit Application
 Main entry point for the web interface
 """
+import sys
+import os
 
+# Add the project root to the Python path
+# This is necessary to ensure that the agent modules can be found
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+if project_root not in sys.path:
+    sys.path.insert(0, project_root)
+    
 import streamlit as st
 import asyncio
 import json

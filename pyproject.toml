@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "meridian-retail-ai-demo"
-version = "1.0.0-demo"
+version = "1.0.0.a1"
 description = "A comprehensive demonstration of MCP and Multi-Agent AI capabilities using Red Hat OpenShift AI for retail operations."
 readme = "README.md"
 authors = [
@@ -37,6 +37,8 @@ dependencies = [
     "tavily-python", 
     "pymilvus",
     "llama-index",
+    "sentence-transformers", # Crucial for creating embeddings
+    "openai",              # <-- ADDED FOR PUBLIC LLM TESTING
 ]
 
 [project.urls]
