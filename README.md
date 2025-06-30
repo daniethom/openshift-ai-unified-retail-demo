@@ -112,7 +112,7 @@ graph TB
 ```
 
 ## 📁 Repository Structure ##
-```mermaid
+```
 meridian-retail-ai/
 ├── README.md
 ├── pyproject.toml
@@ -136,24 +136,25 @@ meridian-retail-ai/
 
 ## 🎯 Demo Scenarios ##
 **1. Fashion Trend Analysis (Multi-Agent + RAG)**
-**Query:** "What winter fashion trends should our Cape Town stores focus on for professional women?"
-**Agents:** Trend, Customer, Inventory, Pricing
-**Result:** A comprehensive report with actionable inventory and pricing recommendations.
+
+- **Query:** "What winter fashion trends should our Cape Town stores focus on for professional women?"
+- **Agents:** Trend, Customer, Inventory, Pricing
+- **Result:** A comprehensive report with actionable inventory and pricing recommendations.
 
 **2. Cross-Sell Opportunity (MCP Integration)**
-**Query:** "Customer Sarah Johnson just bought a winter coat. What should we recommend next?"
-**Tools:** RAG (purchase history), Search (matching accessories), Analytics (personalization).
-**Result:** Personalized product recommendations with a high probability of conversion.
+- *Query:** "Customer Sarah Johnson just bought a winter coat. What should we recommend next?"
+- **Tools:** RAG (purchase history), Search (matching accessories), Analytics (personalization).
+- **Result:** Personalized product recommendations with a high probability of conversion.
 
 **3. Dynamic Inventory Optimization (Agent Orchestration)**
-**Query:** "Optimize inventory for the upcoming summer season across all Johannesburg stores."
-**Process:** Trend forecasting, historical sales analysis, and dynamic price optimization.
-**Result:** A detailed inventory plan with quantities, timing, and pricing strategies.
+- **Query:** "Optimize inventory for the upcoming summer season across all Johannesburg stores."
+- **Process:** Trend forecasting, historical sales analysis, and dynamic price optimization.
+- **Result:** A detailed inventory plan with quantities, timing, and pricing strategies.
 
 **4. Customer Complaint Resolution (Advanced Orchestration)**
-**Query:** "A high-value customer is complaining about a delayed delivery."
-**Strategy:** The Home Agent coordinates the Customer, Inventory, and Pricing agents to analyze the issue, find a solution, and calculate appropriate compensation to retain the customer.
-**Result:** An immediate resolution with a retention strategy.
+- **Query:** "A high-value customer is complaining about a delayed delivery."
+- **Strategy:** The Home Agent coordinates the Customer, Inventory, and Pricing agents to analyze the issue, find a solution, and calculate appropriate compensation to retain the customer.
+- **Result:** An immediate resolution with a retention strategy.
 
 ## 🌍 Deployment
 Local Development (CRC)
