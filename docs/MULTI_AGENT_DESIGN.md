@@ -1,5 +1,6 @@
-Multi-Agent System Design
-1. Orchestration Strategy
+# Multi-Agent System Design
+
+## 1. Orchestration Strategy
 The heart of the Meridian Retail AI system is its multi-agent design, orchestrated by the HomeAgent. This agent acts as a central "manager" or "brain" for the entire crew. It does not perform specialized tasks itself; instead, its sole purpose is to receive user queries, analyze them, and delegate the work to the appropriate specialist agents.
 
 This orchestration is dynamic. The HomeAgent uses its internal logic to classify the complexity and intent of each query and then chooses the most efficient collaboration pattern to generate a comprehensive response.
