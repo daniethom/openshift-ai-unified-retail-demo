@@ -33,6 +33,9 @@ dependencies = [
     "numpy",
     "requests",
     "httpx",
+    "sqlalchemy[asyncio]>=2.0",
+    "asyncpg",
+    "alembic",
     # Dependencies for RAG and Search functionality
     "tavily-python", 
     "pymilvus",
@@ -64,6 +67,7 @@ model = [
 packages = [
     "agents",
     "config",
+    "db",
     "mcp_servers",
     "streamlit_app",
     "rag",
@@ -83,4 +87,22 @@ select = [
     "F",  # pyflakes
     "W",  # pycodestyle warnings
     "I",  # isort
+]
+
+[tool.coverage.run]
+omit = [
+    "rag/knowledge_base.py",
+    "rag/retriever.py",
+    "rag/embeddings.py",
+    "agents/customer_agent.py",
+    "agents/inventory_agent.py",
+    "agents/pricing_agent.py",
+    "scripts/download_model.py",
+    "db/seed.py",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "if __name__ == .__main__.:",
 ]

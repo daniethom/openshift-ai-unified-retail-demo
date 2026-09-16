@@ -13,6 +13,8 @@ DO_BUILD=false
 DO_DOWNLOAD_MODEL=false
 DO_VALIDATE=false
 DO_SKIP_PRIME=false
+DO_MIGRATE_DB=false
+DO_SEED_DB=false
 USE_OPENSHIFT_BUILD=false
 
 usage() {
@@ -24,6 +26,8 @@ Options:
   --openshift-build     Build on-cluster with OpenShift BuildConfig
   --download-model      Run the Granite model download Job after deploy
   --validate            Run post-deploy validation checks
+  --migrate-db          Run Alembic database migration Job
+  --seed-db             Run database seed Job (loads data/*.json)
   --skip-prime          Skip the Milvus priming Job
   --namespace NAME      OpenShift namespace (default: retail-ai-demo)
   -h, --help            Show this help message
@@ -39,6 +43,8 @@ while [[ $# -gt 0 ]]; do
         --openshift-build) DO_BUILD=true; USE_OPENSHIFT_BUILD=true; shift ;;
         --download-model) DO_DOWNLOAD_MODEL=true; shift ;;
         --validate) DO_VALIDATE=true; shift ;;
+        --migrate-db) DO_MIGRATE_DB=true; shift ;;
+        --seed-db) DO_SEED_DB=true; shift ;;
         --skip-prime) DO_SKIP_PRIME=true; shift ;;
         --namespace) NAMESPACE="$2"; shift 2 ;;
         -h|--help) usage; exit 0 ;;
@@ -62,6 +68,22 @@ fi
 
 info "Applying Kustomize overlay for 'production' environment..."
 oc apply -k "${OVERLAY}" -n "${NAMESPACE}" || error "Failed to apply production overlay."
+
+if [[ "${DO_MIGRATE_DB}" == "true" ]]; then
+    info "Running database migration job..."
+    oc delete job db-migrate-job -n "${NAMESPACE}" --ignore-not-found
+    oc apply -f "${PROJECT_ROOT}/k8s/base/db-migrate-job.yaml" -n "${NAMESPACE}"
+    oc wait --for=condition=complete job/db-migrate-job -n "${NAMESPACE}" --timeout=300s \
+        || error "Database migration job failed."
+fi
+
+if [[ "${DO_SEED_DB}" == "true" ]]; then
+    info "Running database seed job..."
+    oc delete job db-seed-job -n "${NAMESPACE}" --ignore-not-found
+    oc apply -f "${PROJECT_ROOT}/k8s/base/db-seed-job.yaml" -n "${NAMESPACE}"
+    oc wait --for=condition=complete job/db-seed-job -n "${NAMESPACE}" --timeout=300s \
+        || error "Database seed job failed."
+fi
 
 if [[ "${DO_SKIP_PRIME}" == "false" ]]; then
     info "Applying Milvus priming job..."

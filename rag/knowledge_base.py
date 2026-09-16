@@ -1,6 +1,7 @@
 """
-RAG Knowledge Base Module for Meridian Retail AI
-Manages the vector database and document storage
+Legacy RAG Knowledge Base Module for Meridian Retail AI.
+
+Deprecated: use ``rag.service.RAGService`` for production Milvus indexing and retrieval.
 """
 
 import json

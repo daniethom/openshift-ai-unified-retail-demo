@@ -46,8 +46,25 @@ format: ## 🎨 Automatically format the code with Ruff and Black
 
 .PHONY: test
 test: ## 🧪 Run the full Pytest test suite
-	@RAG_USE_FALLBACK=true pytest
+	@RAG_USE_FALLBACK=true USE_JSON_FALLBACK=true pytest
 	@echo "✅ Tests completed."
+
+.PHONY: test-cov
+test-cov: ## 🧪 Run tests with coverage gate (75% on core packages)
+	@RAG_USE_FALLBACK=true USE_JSON_FALLBACK=true pytest \
+		--cov=agents/mcp_client --cov=agents/base_agent --cov=agents/home_agent \
+		--cov=agents/trend_agent --cov=agents/tools --cov=mcp_servers \
+		--cov=rag/service --cov=config --cov=db --cov=scripts/prime_database \
+		--cov-report=term-missing --cov-fail-under=75
+	@echo "✅ Coverage checks passed."
+
+.PHONY: migrate-db
+migrate-db: ## 🗄️ Run Alembic migrations against DATABASE_URL
+	@alembic upgrade head
+
+.PHONY: seed-db
+seed-db: ## 🌱 Load data/*.json into PostgreSQL (requires DATABASE_URL)
+	@python -m db.seed
 
 .PHONY: build-images
 build-images: ## 🐳 Build and push image to OpenShift internal registry

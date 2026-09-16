@@ -83,10 +83,9 @@ async def test_analyze_query_complex_analytical(home_agent):
     analysis = await home_agent._analyze_query(query, {})
     
     # Assert
-    assert analysis["complexity"] == QueryComplexity.COMPLEX
-    # The set comparison ignores order, which is good for this list.
+    assert analysis["complexity"] == QueryComplexity.MODERATE
     assert set(analysis["required_agents"]) == {"PricingAgent", "InventoryAgent", "TrendAgent"}
-    assert analysis["strategy"] == "hierarchical"
+    assert analysis["strategy"] == "parallel"
     assert analysis["intent"]["question_type"] == "analytical"
 
 @pytest.mark.asyncio

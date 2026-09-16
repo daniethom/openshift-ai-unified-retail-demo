@@ -1,6 +1,7 @@
 """
-RAG Retriever Module for Meridian Retail AI
-Implements the retrieval logic for the RAG system
+Legacy RAG Retriever Module for Meridian Retail AI.
+
+Deprecated: use ``rag.service.RAGService`` for production Milvus retrieval.
 """
 
 import logging

@@ -111,11 +111,11 @@ async def test_process_query_general_error_handling(pricing_agent, monkeypatch):
     the main method catches it and returns a proper error response.
     """
     # Arrange
-    query = "This query will cause an error"
-    # Make one of the mocked methods raise an error
-    pricing_agent._get_current_pricing = AsyncMock(side_effect=IOError("Database connection failed"))
-    
-    # Act
+    query = "Optimize pricing for product P1"
+    pricing_agent._handle_optimization_query = AsyncMock(
+        side_effect=IOError("Database connection failed")
+    )
+
     result = await pricing_agent.process_query(query, {"product_id": "P1"})
     
     # Assert

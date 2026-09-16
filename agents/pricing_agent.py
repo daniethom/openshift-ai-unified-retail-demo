@@ -387,31 +387,29 @@ class PricingAgent(BaseAgent):
         }
     
     async def _get_current_pricing(self, product_id: str) -> Dict[str, Any]:
-        """Get current pricing data for a product"""
-        # In production, query actual pricing database
-        # Mock data for demo
-        pricing_data = {
-            "MF-BLZ-001": {
-                "product_id": "MF-BLZ-001",
-                "name": "Executive Blazer",
-                "current_price": 1899,
-                "cost": 1140,
-                "margin": 0.40,
-                "list_price": 2299,
-                "min_price": 1499,
-                "price_history": [
-                    {"date": "2024-01-01", "price": 2299},
-                    {"date": "2024-03-15", "price": 1899}
-                ]
+        """Get current pricing data for a product from analytics MCP."""
+        product = await mcp_client.get_product_details(product_id)
+        if product and not product.get("error"):
+            price = float(product.get("price", 999))
+            cost = round(price * 0.6, 2)
+            return {
+                "product_id": product_id,
+                "name": product.get("name", product_id),
+                "current_price": price,
+                "cost": cost,
+                "margin": round((price - cost) / price, 2) if price else 0.4,
+                "list_price": round(price * 1.15, 2),
+                "min_price": round(price * 0.85, 2),
+                "brand": product.get("brand"),
+                "stock_level": product.get("stock_level"),
             }
-        }
-        
-        return pricing_data.get(product_id, {
+
+        return {
             "product_id": product_id,
             "current_price": 999,
             "cost": 600,
-            "margin": 0.40
-        })
+            "margin": 0.40,
+        }
     
     async def _get_market_data(self, product_id: str) -> Dict[str, Any]:
         """Get market data for competitive analysis"""

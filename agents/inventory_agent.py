@@ -164,15 +164,15 @@ class InventoryAgent(BaseAgent):
     def _classify_query(self, query: str) -> str:
         """Classify the type of inventory query"""
         query_lower = query.lower()
-        
-        if any(word in query_lower for word in ["stock", "inventory", "available", "have"]):
-            return "stock_check"
-        elif any(word in query_lower for word in ["optimize", "improve", "reduce cost"]):
+
+        if any(word in query_lower for word in ["optimize", "improve", "reduce cost"]):
             return "optimization"
         elif any(word in query_lower for word in ["forecast", "predict", "future", "demand"]):
             return "forecast"
         elif any(word in query_lower for word in ["reorder", "replenish", "order more"]):
             return "reorder"
+        elif any(word in query_lower for word in ["stock", "inventory", "available", "have"]):
+            return "stock_check"
         else:
             return "general"
     
@@ -354,15 +354,23 @@ class InventoryAgent(BaseAgent):
         return stock_data
     
     async def _query_stock(self, product_id: str, location: str) -> Dict[str, Any]:
-        """Query stock for a specific product and location"""
-        # In production, this would query the actual database
-        # For demo, return simulated data
+        """Query stock for a specific product and location."""
+        product = await mcp_client.get_product_details(product_id)
+        stock_level = int(product.get("stock_level", 0)) if product else 0
+        if not stock_level:
+            stock_level = 25
+
+        allocated = max(1, stock_level // 5)
+        available = max(0, stock_level - allocated)
+        incoming = max(0, stock_level // 4)
+
         return {
-            "on_hand": np.random.randint(0, 100),
-            "allocated": np.random.randint(0, 20),
-            "available": np.random.randint(0, 80),
-            "incoming": np.random.randint(0, 50),
-            "last_updated": datetime.now().isoformat()
+            "on_hand": stock_level,
+            "allocated": allocated,
+            "available": available,
+            "incoming": incoming,
+            "last_updated": datetime.now().isoformat(),
+            "location": location,
         }
     
     def _calculate_availability(self, stock_data: Dict[str, Any]) -> str:
@@ -477,19 +485,19 @@ class InventoryAgent(BaseAgent):
         # For demo, simulate some items needing reorder
         sample_items = [
             {
-                "product_id": "MF-BLZ-001",
+                "product_id": "MF001",
                 "current_stock": 15,
                 "reorder_point": 30,
                 "urgency": "high",
-                "stockout_date": (datetime.now() + timedelta(days=2)).isoformat()
+                "stockout_date": (datetime.now() + timedelta(days=2)).isoformat(),
             },
             {
-                "product_id": "ST-DNM-045",
+                "product_id": "ST001",
                 "current_stock": 50,
                 "reorder_point": 75,
                 "urgency": "medium",
-                "stockout_date": (datetime.now() + timedelta(days=7)).isoformat()
-            }
+                "stockout_date": (datetime.now() + timedelta(days=7)).isoformat(),
+            },
         ]
         
         if urgent_only:

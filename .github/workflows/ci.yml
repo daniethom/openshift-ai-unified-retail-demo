@@ -8,6 +8,7 @@ on:
 env:
   PYTHON_VERSION: "3.11"
   RAG_USE_FALLBACK: "true"
+  USE_JSON_FALLBACK: "true"
 
 jobs:
   test:
@@ -31,7 +32,13 @@ jobs:
           black --check .
 
       - name: Test
-        run: pytest
+        run: |
+          pytest \
+            --cov=agents/mcp_client --cov=agents/base_agent --cov=agents/home_agent \
+            --cov=agents/trend_agent --cov=agents/tools --cov=mcp_servers \
+            --cov=rag/service --cov=config --cov=db --cov=scripts/prime_database \
+            --cov-report=term-missing \
+            --cov-fail-under=75
 
   build-image:
     runs-on: ubuntu-latest
@@ -44,4 +51,4 @@ jobs:
 
       - name: Smoke test image imports
         run: |
-          docker run --rm meridian-retail-ai:ci python -c "import agents, config, mcp_servers, rag"
+          docker run --rm meridian-retail-ai:ci python -c "import agents, config, db, mcp_servers, rag"

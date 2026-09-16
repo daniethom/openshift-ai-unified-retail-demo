@@ -115,6 +115,36 @@ async def get_product_details(product_id: str) -> dict[str, Any]:
     return result if isinstance(result, dict) else {}
 
 
+async def get_customer_profile(customer_id: str) -> dict[str, Any]:
+    """Fetch customer profile from the analytics MCP server."""
+    try:
+        result = await invoke_tool(
+            settings.analytics_mcp_url,
+            "get_customer_profile",
+            {"customer_id": customer_id},
+        )
+    except MCPClientError:
+        return {}
+
+    return result if isinstance(result, dict) else {}
+
+
+async def search_customers_by_name(name: str) -> list[dict[str, Any]]:
+    """Search customers by name via the analytics MCP server."""
+    try:
+        result = await invoke_tool(
+            settings.analytics_mcp_url,
+            "search_customers_by_name",
+            {"name": name},
+        )
+    except MCPClientError:
+        return []
+
+    if isinstance(result, list):
+        return result
+    return []
+
+
 async def check_mcp_health(base_url: str) -> bool:
     """Best-effort health check for an MCP server URL."""
     try:

@@ -12,6 +12,7 @@ import numpy as np
 from decimal import Decimal
 
 from agents.base_agent import BaseAgent, AgentCapability
+from agents import mcp_client
 
 logger = logging.getLogger(__name__)
 
@@ -195,15 +196,15 @@ class CustomerAgent(BaseAgent):
     def _classify_customer_query(self, query: str) -> str:
         """Classify the type of customer query"""
         query_lower = query.lower()
-        
+
+        if any(word in query_lower for word in ["loyalty", "points", "rewards", "member"]):
+            return "loyalty"
         if any(word in query_lower for word in ["help", "how", "where", "when", "status"]):
             return "support"
         elif any(word in query_lower for word in ["recommend", "suggest", "looking for", "need"]):
             return "recommendation"
         elif any(word in query_lower for word in ["complaint", "problem", "issue", "unhappy", "disappointed"]):
             return "complaint"
-        elif any(word in query_lower for word in ["loyalty", "points", "rewards", "member"]):
-            return "loyalty"
         else:
             return "general"
     
@@ -423,9 +424,7 @@ class CustomerAgent(BaseAgent):
         }
     
     async def _get_customer_profile(self, customer_id: str) -> Dict[str, Any]:
-        """Get customer profile data"""
-        # In production, query actual customer database
-        # Mock data for demo
+        """Get customer profile data from analytics MCP or seed fallback."""
         if customer_id == "guest":
             return {
                 "customer_id": "guest",
@@ -433,9 +432,28 @@ class CustomerAgent(BaseAgent):
                 "lifetime_value": 0,
                 "join_date": None,
                 "preferred_channels": ["web"],
-                "communication_preferences": "email"
+                "communication_preferences": "email",
             }
-        
+
+        profile = await mcp_client.get_customer_profile(customer_id)
+        if profile and not profile.get("error"):
+            return {
+                "customer_id": profile.get("customer_id", customer_id),
+                "name": f"{profile.get('first_name', '')} {profile.get('last_name', '')}".strip(),
+                "tier": profile.get("loyalty_tier", "Bronze").lower(),
+                "lifetime_value": len(profile.get("purchase_history", [])) * 2500,
+                "join_date": profile.get("join_date", "2022-03-15"),
+                "preferred_channels": ["app", "store"],
+                "communication_preferences": "email",
+                "location": profile.get("location", "national"),
+                "preferred_brands": profile.get("preferred_brands", []),
+                "purchase_history": profile.get("purchase_history", []),
+            }
+
+        matches = await mcp_client.search_customers_by_name("Sarah Johnson")
+        if matches:
+            return await self._get_customer_profile(matches[0]["customer_id"])
+
         return {
             "customer_id": customer_id,
             "name": "Sarah Johnson",
@@ -445,8 +463,6 @@ class CustomerAgent(BaseAgent):
             "preferred_channels": ["app", "store"],
             "communication_preferences": "email",
             "location": "cape_town",
-            "age_group": "25-35",
-            "style_preference": "modern_chic"
         }
     
     def _determine_query_category(self, query: str) -> str:

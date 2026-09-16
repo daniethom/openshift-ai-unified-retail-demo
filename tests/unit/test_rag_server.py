@@ -84,7 +84,8 @@ def test_invoke_non_existent_tool_returns_404(client):
     """
     # Arrange
     payload = {
-        "tool_name": "format_hard_drive"
+        "tool_name": "format_hard_drive",
+        "input_data": {},
     }
     
     # Act
@@ -92,5 +93,5 @@ def test_invoke_non_existent_tool_returns_404(client):
     
     # Assert
     assert response.status_code == 404
-    assert "Tool 'format_hard_drive' not found" in response.json()["detail"]
+    assert "Tool 'format_hard_drive' not found" in response.json()["detail"].rstrip(".")
 
