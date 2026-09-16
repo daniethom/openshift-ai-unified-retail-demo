@@ -83,7 +83,11 @@ def demo_agent_statuses() -> dict[str, dict[str, Any]]:
                 "avg_response_time": 1.8,
                 "total_collaborations": 95,
             },
-            "capabilities": ["Stock Checking", "Demand Forecasting", "Reorder Planning"],
+            "capabilities": [
+                "Stock Checking",
+                "Demand Forecasting",
+                "Reorder Planning",
+            ],
         },
         "PricingAgent": {
             "status": "active",
@@ -144,12 +148,18 @@ def fetch_mcp_health(url: str) -> dict[str, Any]:
     try:
         response = httpx.get(f"{url.rstrip('/')}/healthz", timeout=5.0)
         response.raise_for_status()
-        return {"ok": True, "status_code": response.status_code, "body": response.json()}
+        return {
+            "ok": True,
+            "status_code": response.status_code,
+            "body": response.json(),
+        }
     except Exception as exc:
         return {"ok": False, "error": str(exc)}
 
 
-def invoke_mcp(url: str, payload: dict[str, Any], timeout: float = 60.0) -> dict[str, Any]:
+def invoke_mcp(
+    url: str, payload: dict[str, Any], timeout: float = 60.0
+) -> dict[str, Any]:
     try:
         response = httpx.post(
             f"{url.rstrip('/')}/invoke",
@@ -157,7 +167,11 @@ def invoke_mcp(url: str, payload: dict[str, Any], timeout: float = 60.0) -> dict
             timeout=timeout,
         )
         response.raise_for_status()
-        return {"ok": True, "status_code": response.status_code, "body": response.json()}
+        return {
+            "ok": True,
+            "status_code": response.status_code,
+            "body": response.json(),
+        }
     except httpx.HTTPStatusError as exc:
         detail = exc.response.text
         return {

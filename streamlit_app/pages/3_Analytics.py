@@ -12,7 +12,10 @@ st.caption("PostgreSQL-backed retail metrics via the Analytics MCP server")
 
 col1, col2 = st.columns(2)
 with col1:
-    st.metric("Data backend", "PostgreSQL" if not settings.use_json_fallback else "JSON fallback")
+    st.metric(
+        "Data backend",
+        "PostgreSQL" if not settings.use_json_fallback else "JSON fallback",
+    )
 with col2:
     st.metric("Analytics MCP", settings.analytics_mcp_url)
 

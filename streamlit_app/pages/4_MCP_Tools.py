@@ -77,7 +77,9 @@ with search_tab:
         )
         if result["ok"]:
             for item in result["body"].get("result", []):
-                st.markdown(f"**[{item.get('title', 'Result')}]({item.get('url', '')})**")
+                st.markdown(
+                    f"**[{item.get('title', 'Result')}]({item.get('url', '')})**"
+                )
                 st.write(item.get("content", ""))
                 st.divider()
         else:

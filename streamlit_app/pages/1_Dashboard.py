@@ -18,7 +18,10 @@ import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
 
-from streamlit_app.components.agent_status import AgentMetricsTracker, AgentStatusDisplay
+from streamlit_app.components.agent_status import (
+    AgentMetricsTracker,
+    AgentStatusDisplay,
+)
 from streamlit_app.page_utils import ensure_agent_system, get_agent_statuses
 
 # Initialize components

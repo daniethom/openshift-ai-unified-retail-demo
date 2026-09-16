@@ -30,9 +30,7 @@ agent_statuses = get_agent_statuses()
 status_display.render_system_metrics(agent_statuses)
 st.divider()
 
-tabs = st.tabs(
-    ["Agent Grid", "Comparison", "Performance", "Collaboration", "Activity"]
-)
+tabs = st.tabs(["Agent Grid", "Comparison", "Performance", "Collaboration", "Activity"])
 
 with tabs[0]:
     status_display.render_agent_grid(agent_statuses)
