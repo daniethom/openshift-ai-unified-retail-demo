@@ -125,6 +125,14 @@ class InventoryAgent(BaseAgent):
                 result = await self._handle_forecast(query, context)
             elif query_type == "reorder":
                 result = await self._handle_reorder(query, context)
+            elif query_type == "cross_sell":
+                result = await self._handle_cross_sell_query(query, context)
+            elif query_type == "seasonal_optimization":
+                result = await self._handle_seasonal_optimization_query(query, context)
+            elif query_type == "trend_alignment":
+                result = await self._handle_trend_alignment_query(query, context)
+            elif query_type == "service_recovery":
+                result = await self._handle_service_recovery_query(query, context)
             else:
                 result = await self._handle_general_query(query, context)
 
@@ -164,6 +172,11 @@ class InventoryAgent(BaseAgent):
         query_lower = query.lower()
 
         if any(word in query_lower for word in ["optimize", "improve", "reduce cost"]):
+            if any(
+                word in query_lower
+                for word in ["summer", "winter", "season", "johannesburg", "stores"]
+            ):
+                return "seasonal_optimization"
             return "optimization"
         elif any(
             word in query_lower for word in ["forecast", "predict", "future", "demand"]
@@ -177,8 +190,170 @@ class InventoryAgent(BaseAgent):
             word in query_lower for word in ["stock", "inventory", "available", "have"]
         ):
             return "stock_check"
+        elif any(
+            word in query_lower for word in ["recommend", "cross-sell", "cross sell"]
+        ) or ("bought" in query_lower and "customer" in query_lower):
+            return "cross_sell"
+        elif any(
+            word in query_lower for word in ("trend", "fashion", "seasonal", "style")
+        ) and any(
+            word in query_lower for word in ("store", "stock", "inventory", "focus")
+        ):
+            return "trend_alignment"
+        elif any(
+            word in query_lower
+            for word in ("complaint", "complaining", "delayed", "poor service")
+        ):
+            return "service_recovery"
         else:
             return "general"
+
+    async def _handle_seasonal_optimization_query(
+        self, query: str, context: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """Demo-quality seasonal inventory optimization for store networks."""
+        return {
+            "primary_insight": (
+                "Rebalance Johannesburg stores for summer demand while clearing "
+                "leftover winter units through targeted transfers."
+            ),
+            "optimizations": [
+                {
+                    "action": "Increase linen separates and lightweight blazers by 18%",
+                    "impact": "high",
+                    "stores": "Sandton, Rosebank, Eastgate",
+                },
+                {
+                    "action": "Transfer slow winter coats to Cape Town outlets",
+                    "impact": "medium",
+                    "stores": "12 Johannesburg locations",
+                },
+                {
+                    "action": "Set reorder triggers on hero summer SKUs",
+                    "impact": "high",
+                    "stores": "Network-wide",
+                },
+            ],
+            "potential_savings": {
+                "annual_savings": 2300000,
+                "holding_cost_reduction": 900000,
+                "stockout_cost_reduction": 1400000,
+                "payback_period_months": 2,
+            },
+            "implementation_plan": [
+                {
+                    "step": 1,
+                    "action": "Run store-level allocation model for Johannesburg",
+                    "timeline": "Week 1",
+                },
+                {
+                    "step": 2,
+                    "action": "Execute inter-store transfers for winter carryover",
+                    "timeline": "Week 2",
+                },
+                {
+                    "step": 3,
+                    "action": "Publish replenishment triggers to store managers",
+                    "timeline": "Week 3",
+                },
+            ],
+            "recommendations": [
+                "Prioritize breathable workwear capsules for office districts",
+                "Pair inventory moves with summer trend buys from TrendAgent",
+            ],
+        }
+
+    async def _handle_trend_alignment_query(
+        self, query: str, context: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """Stock actions aligned to trend-led buying for demo scenarios."""
+        return {
+            "primary_insight": (
+                "Cape Town stores can support hero winter buys for professional "
+                "women without risking stockouts on suiting and knit layers."
+            ),
+            "complement_availability": [
+                {
+                    "product": "Structured Blazer",
+                    "location": "Cape Town CBD",
+                    "available": 36,
+                },
+                {
+                    "product": "Fine Knit Layer Set",
+                    "location": "V&A Waterfront",
+                    "available": 28,
+                },
+                {
+                    "product": "Tailored Trousers",
+                    "location": "Canal Walk",
+                    "available": 41,
+                },
+            ],
+            "recommendations": [
+                "Increase allocation 15% on suiting separates in Cape Town",
+                "Fast-track reorders on luxe knitwear ahead of peak demand",
+            ],
+        }
+
+    async def _handle_service_recovery_query(
+        self, query: str, context: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """Inventory actions supporting complaint resolution demos."""
+        return {
+            "primary_insight": (
+                "Replacement units and express fulfillment slots are available at "
+                "the nearest distribution node for the delayed order."
+            ),
+            "complement_availability": [
+                {
+                    "product": "Replacement order slot",
+                    "location": "Johannesburg DC",
+                    "available": 12,
+                },
+                {
+                    "product": "Express courier capacity",
+                    "location": "Same-day delivery zone",
+                    "available": 8,
+                },
+            ],
+            "recommendations": [
+                "Reserve replacement SKU immediately to prevent further delay",
+                "Offer express re-delivery once inventory is confirmed",
+            ],
+        }
+
+    async def _handle_cross_sell_query(
+        self, query: str, context: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """Return complement availability for cross-sell demo scenarios."""
+        complements = [
+            {
+                "product": "Merino Wool Scarf",
+                "location": "Cape Town",
+                "available": 42,
+            },
+            {
+                "product": "Leather Touchscreen Gloves",
+                "location": "Cape Town",
+                "available": 18,
+            },
+            {
+                "product": "Cashmere Beanie",
+                "location": "Sandton",
+                "available": 27,
+            },
+        ]
+        return {
+            "primary_insight": (
+                "Winter accessories are in stock at Cape Town and Sandton for "
+                "immediate cross-sell with the coat purchase."
+            ),
+            "complement_availability": complements,
+            "recommendations": [
+                "Prioritize scarf and glove upsell while the coat purchase is fresh",
+                "Reserve low-stock gloves for VIP customers like Sarah Johnson",
+            ],
+        }
 
     async def _handle_stock_check(
         self, query: str, context: Dict[str, Any]

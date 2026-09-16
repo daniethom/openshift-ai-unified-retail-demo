@@ -8,6 +8,8 @@ from typing import Any, Dict, Optional
 
 import streamlit as st
 
+from streamlit_app.page_utils import format_assistant_response
+
 
 class ChatInterface:
     """
@@ -183,43 +185,10 @@ class ChatInterface:
         if isinstance(result, str):
             return result
 
-        # Format structured response
-        formatted = ""
+        if isinstance(result, dict):
+            return format_assistant_response(result)
 
-        # Summary
-        if "summary" in result:
-            formatted += result["summary"] + "\n\n"
-
-        # Key insights
-        if "detailed_insights" in result:
-            formatted += "**📊 Key Insights:**\n"
-            for agent, insight in result["detailed_insights"].items():
-                if isinstance(insight, dict):
-                    insight_text = insight.get(
-                        "result", insight.get("summary", str(insight))
-                    )
-                else:
-                    insight_text = str(insight)
-                formatted += f"- **{agent}**: {insight_text}\n"
-            formatted += "\n"
-
-        # Recommendations
-        if "recommendations" in result:
-            formatted += "**💡 Recommendations:**\n"
-            for i, rec in enumerate(result["recommendations"], 1):
-                if isinstance(rec, dict):
-                    rec_text = rec.get("action", rec.get("description", str(rec)))
-                else:
-                    rec_text = str(rec)
-                formatted += f"{i}. {rec_text}\n"
-            formatted += "\n"
-
-        # Confidence
-        if "confidence_level" in result:
-            confidence = result["confidence_level"]
-            formatted += f"\n*Confidence: {confidence:.0%}*"
-
-        return formatted.strip() or "I've processed your request successfully."
+        return "I've processed your request successfully."
 
 
 class MessageFormatter:

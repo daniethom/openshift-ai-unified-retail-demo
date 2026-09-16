@@ -156,6 +156,14 @@ class PricingAgent(BaseAgent):
                 result = await self._handle_promotion_query(query, context)
             elif query_type == "margin":
                 result = await self._handle_margin_query(query, context)
+            elif query_type == "cross_sell":
+                result = await self._handle_cross_sell_query(query, context)
+            elif query_type == "seasonal_optimization":
+                result = await self._handle_seasonal_pricing_query(query, context)
+            elif query_type == "trend_alignment":
+                result = await self._handle_trend_pricing_query(query, context)
+            elif query_type == "service_recovery":
+                result = await self._handle_service_recovery_query(query, context)
             else:
                 result = await self._handle_general_pricing_query(query, context)
 
@@ -211,8 +219,123 @@ class PricingAgent(BaseAgent):
             return "promotion"
         elif any(word in query_lower for word in ["margin", "profit", "markup"]):
             return "margin"
+        elif any(
+            word in query_lower for word in ["recommend", "cross-sell", "cross sell"]
+        ) or ("bought" in query_lower and "customer" in query_lower):
+            return "cross_sell"
+        elif (
+            any(
+                word in query_lower
+                for word in ("optimize", "optimiz", "summer", "season")
+            )
+            and "johannesburg" in query_lower
+        ):
+            return "seasonal_optimization"
+        elif any(
+            word in query_lower for word in ("trend", "fashion", "seasonal", "style")
+        ) and any(
+            word in query_lower for word in ("store", "focus", "professional", "women")
+        ):
+            return "trend_alignment"
+        elif any(
+            word in query_lower
+            for word in ("complaint", "complaining", "delayed", "poor service")
+        ):
+            return "service_recovery"
         else:
             return "general"
+
+    async def _handle_seasonal_pricing_query(
+        self, query: str, context: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """Pricing guidance for seasonal inventory optimization demos."""
+        return {
+            "primary_insight": (
+                "Use targeted markdowns on winter carryover while holding premium "
+                "price on new summer workwear capsules."
+            ),
+            "bundle_offers": [
+                {
+                    "offer": "Summer workwear bundle: 10% off when buying 3+ pieces",
+                    "expected_uplift": "Improves sell-through in Johannesburg CBD stores",
+                }
+            ],
+            "recommendations": [
+                "Markdown winter coats 15-20% only after Cape Town transfer window",
+                "Protect margin on linen and lightweight suiting during launch week",
+            ],
+        }
+
+    async def _handle_trend_pricing_query(
+        self, query: str, context: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """Pricing actions aligned to trend-led buying."""
+        return {
+            "primary_insight": (
+                "Premium pricing room on structured workwear and luxe knitwear "
+                "in Cape Town professional segments."
+            ),
+            "bundle_offers": [
+                {
+                    "offer": "Power suiting set: jacket + trouser at 12% bundle discount",
+                    "expected_uplift": "Supports Power Suiting trend adoption",
+                }
+            ],
+            "recommendations": [
+                "Hold full price on hero suiting for first 4 weeks",
+                "Use limited-time accessory pricing to complete the look",
+            ],
+        }
+
+    async def _handle_service_recovery_query(
+        self, query: str, context: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """Retention pricing for complaint resolution demos."""
+        return {
+            "primary_insight": (
+                "Authorize a retention offer within margin guardrails for the "
+                "high-value customer."
+            ),
+            "bundle_offers": [
+                {
+                    "offer": "Free express re-delivery plus 15% off next purchase",
+                    "expected_uplift": "Protects lifetime value while resolving delay",
+                },
+                {
+                    "offer": "Optional upgrade to priority customer care for 90 days",
+                    "expected_uplift": "Reduces churn risk after service failure",
+                },
+            ],
+            "recommendations": [
+                "Lead with apology plus tangible compensation in the first response",
+                "Avoid blanket discounting; tailor offer to loyalty tier",
+            ],
+        }
+
+    async def _handle_cross_sell_query(
+        self, query: str, context: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """Return bundle pricing for accessory cross-sell scenarios."""
+        return {
+            "primary_insight": (
+                "Apply a 15% accessory bundle when a scarf and gloves are sold "
+                "with a winter coat."
+            ),
+            "bundle_offers": [
+                {
+                    "offer": "Coat + scarf + gloves bundle: 15% off accessories",
+                    "expected_uplift": "R420 average basket increase",
+                },
+                {
+                    "offer": "Gold member add-on: extra 5% on layering knitwear",
+                    "expected_uplift": "Improves retention for Sarah Johnson tier",
+                },
+            ],
+            "recommendations": [
+                "Lead with bundle savings at checkout",
+                "Highlight limited-time accessory pricing in the app notification",
+            ],
+        }
 
     async def _handle_optimization_query(
         self, query: str, context: Dict[str, Any]

@@ -19,7 +19,7 @@ from typing import Any, Dict
 import streamlit as st
 
 from config.settings import settings
-from streamlit_app.page_utils import load_public_config
+from streamlit_app.page_utils import format_assistant_response, load_public_config
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -269,6 +269,7 @@ def display_sidebar():
         for title, query in scenarios.items():
             if st.button(title, use_container_width=True):
                 st.session_state.messages.append({"role": "user", "content": query})
+                asyncio.run(process_user_query(query))
                 st.rerun()
 
         st.divider()
@@ -357,23 +358,7 @@ async def process_user_query(query: str):
 
             # Format the response
             if isinstance(response, dict):
-                summary = response.get("summary", "I've analyzed your query.")
-                insights = response.get("detailed_insights", {})
-                recommendations = response.get("recommendations", [])
-
-                # Build formatted response
-                formatted_response = summary
-
-                if insights:
-                    formatted_response += "\n\n**Key Insights:**\n"
-                    for agent, insight in insights.items():
-                        if isinstance(insight, dict) and insight.get("result"):
-                            formatted_response += f"- {agent}: {insight['result']}\n"
-
-                if recommendations:
-                    formatted_response += "\n**Recommendations:**\n"
-                    for i, rec in enumerate(recommendations, 1):
-                        formatted_response += f"{i}. {rec}\n"
+                formatted_response = format_assistant_response(response)
 
                 # Add assistant message
                 st.session_state.messages.append(
