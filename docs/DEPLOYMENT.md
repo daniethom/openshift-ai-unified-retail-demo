@@ -271,22 +271,126 @@ USE_JSON_FALLBACK=true  # Read data/*.json instead of PostgreSQL
 LLM_API_BASE=http://127.0.0.1:8080/v1   # Your local or cloud LLM endpoint
 ```
 
+For containerized PostgreSQL on a Podman workstation, see [Local development with Podman](#local-development-with-podman) below.
+
+## Local development with Podman
+
+This project targets **Podman Desktop** and **`podman compose`** for local containers. GitHub Actions CI still uses Docker; the same `Dockerfile` and `compose.yml` work with both runtimes.
+
+### Prerequisites
+
+| Tool | Purpose |
+|------|---------|
+| [Podman Desktop](https://podman-desktop.io/) | Local container engine |
+| `podman compose` | Compose support (built into Podman Desktop) |
+| Python 3.11+ | App, MCP servers, migrations |
+
+### Docker vs Podman command map
+
+| Docker | Podman |
+|--------|--------|
+| `docker compose up -d` | `podman compose up -d` |
+| `docker run …` | `podman run …` |
+| `docker build -t …` | `podman build -t …` |
+| `docker ps` | `podman ps` |
+
+### PostgreSQL with Compose (recommended)
+
+The repo root includes `compose.yml` for a local Postgres 16 instance:
+
+```bash
+podman compose up -d
+podman compose ps   # wait until postgres is healthy
+```
+
+Add to `.env` (or export in your shell):
+
+```bash
+DATABASE_URL="postgresql+asyncpg://meridian:secret@127.0.0.1:5432/meridian"
+USE_JSON_FALLBACK=false
+```
+
+Initialize schema and seed data from `data/*.json`:
+
+```bash
+make migrate-db
+make seed-db
+```
+
+Stop and remove containers:
+
+```bash
+podman compose down        # keep data volume
+podman compose down -v     # delete postgres data
+```
+
+### PostgreSQL with `podman run` (without Compose)
+
+```bash
+podman run -d --name meridian-pg \
+  -e POSTGRES_DB=meridian \
+  -e POSTGRES_USER=meridian \
+  -e POSTGRES_PASSWORD=secret \
+  -p 5432:5432 \
+  postgres:16
+```
+
+Use the same `DATABASE_URL`, `make migrate-db`, and `make seed-db` steps as above.
+
+### Build and smoke-test the application image
+
+Mirrors the CI `build-image` job:
+
+```bash
+podman build -t meridian-retail-ai:local .
+podman run --rm meridian-retail-ai:local \
+  python -c "import agents, config, db, mcp_servers, rag"
+```
+
+### Optional: Milvus for real RAG
+
+With JSON fallback disabled for vectors, run Milvus standalone:
+
+```bash
+podman run -d --name milvus \
+  -p 19530:19530 -p 9091:9091 \
+  docker.io/milvusdb/milvus:v2.4.15 \
+  milvus run standalone
+```
+
+Then prime the collection:
+
+```bash
+export RAG_USE_FALLBACK=false
+python scripts/prime_database.py --recreate
+```
+
+### Typical Podman + Python workflow
+
+```bash
+make install
+cp .env.example .env
+# Set TAVILY_API_KEY; set DATABASE_URL / USE_JSON_FALLBACK as needed
+
+podman compose up -d          # optional Postgres
+make migrate-db && make seed-db # when using Postgres
+
+# Four terminals — MCP servers on ports 8001–8004
+make run-ui
+make test                       # USE_JSON_FALLBACK=true skips DB in CI-style runs
+```
+
 ## PostgreSQL data layer
 
 Production deployments use in-cluster PostgreSQL as the system of record. JSON files under `data/` are seed input only.
 
 ### Local PostgreSQL
 
-```bash
-docker run -d --name meridian-pg \
-  -e POSTGRES_DB=meridian \
-  -e POSTGRES_USER=meridian \
-  -e POSTGRES_PASSWORD=secret \
-  -p 5432:5432 postgres:16
+Use [Compose](#postgresql-with-compose-recommended) or [`podman run`](#postgresql-with-podman-run-without-compose) as above. Docker equivalents work if you prefer Docker:
 
-export DATABASE_URL="postgresql+asyncpg://meridian:secret@127.0.0.1:5432/meridian"
-make migrate-db
-make seed-db
+```bash
+docker compose up -d
+# or: docker run -d --name meridian-pg … (same env vars as compose.yml)
 ```
 
 Set `USE_JSON_FALLBACK=false` in `.env` so MCP servers and agents read from PostgreSQL.

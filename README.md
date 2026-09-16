@@ -30,7 +30,8 @@ Meridian Retail Group is a fictional South African retail conglomerate:
 - Python 3.11+
 - [uv](https://github.com/astral-sh/uv) or pip
 - Tavily API key ([tavily.com](https://tavily.com))
-- Optional: Milvus for real RAG (`docker run … milvus run standalone`)
+- Optional: Podman Desktop + `podman compose` for local PostgreSQL (see [DEPLOYMENT.md — Local development with Podman](docs/DEPLOYMENT.md#local-development-with-podman))
+- Optional: Milvus for real RAG (Podman/Docker standalone — see deployment guide)
 - Optional: OpenShift CLI (`oc`) for cluster deployment
 
 ### Setup

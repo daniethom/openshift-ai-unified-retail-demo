@@ -1,0 +1,22 @@
+# Local backing services for Podman Desktop / podman compose.
+# Usage: podman compose up -d
+services:
+  postgres:
+    image: docker.io/library/postgres:16
+    container_name: meridian-pg
+    environment:
+      POSTGRES_DB: meridian
+      POSTGRES_USER: meridian
+      POSTGRES_PASSWORD: secret
+    ports:
+      - "5432:5432"
+    volumes:
+      - meridian-pg-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U meridian -d meridian"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  meridian-pg-data:
