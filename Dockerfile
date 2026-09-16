@@ -26,8 +26,8 @@ COPY scripts/ scripts/
 COPY alembic/ alembic/
 COPY alembic.ini .
 
-# Install runtime and model-download dependencies for the container image
-RUN uv pip install --system --no-cache -e ".[model]"
+# Install into /opt/venv (not system Python) so dependencies are copied to the final image
+RUN uv pip install --python /opt/venv/bin/python --no-cache -e ".[model]"
 
 
 # Stage 2: Final - Create the final, optimized image
