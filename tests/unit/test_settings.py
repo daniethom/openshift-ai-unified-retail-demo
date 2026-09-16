@@ -5,7 +5,7 @@ import sys
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 
-from config.settings import Settings
+from config.settings import Settings, get_public_config
 
 
 def test_settings_builds_mcp_urls_from_ports(monkeypatch):
@@ -46,3 +46,28 @@ def test_mcp_servers_config_shape(monkeypatch):
         "analytics_server",
     }
     assert config["llm_server"]["endpoint"] == "http://llm:8001"
+
+
+def test_public_config_redacts_secrets(monkeypatch):
+    monkeypatch.setenv(
+        "DATABASE_URL",
+        "postgresql+asyncpg://meridian:secret@127.0.0.1:5432/meridian",
+    )
+    monkeypatch.setenv("TAVILY_API_KEY", "tvly-secret-key-value")
+    monkeypatch.setenv("LLM_API_KEY", "ollama")
+    monkeypatch.setenv("LLM_MODEL_NAME", "granite3.2:8b")
+
+    settings = Settings.from_env()
+    public = settings.public_config()
+
+    assert "secret" not in public["DATABASE_URL"]
+    assert "***" in public["DATABASE_URL"]
+    assert public["TAVILY_API_KEY"] == "configured (redacted)"
+    assert public["LLM_API_KEY"] == "ollama"
+    assert public["LLM_MODEL_NAME"] == "granite3.2:8b"
+    assert public["TAVILY_API_KEY"] != "tvly-secret-key-value"
+
+
+def test_get_public_config_reads_current_env(monkeypatch):
+    monkeypatch.setenv("LLM_MODEL_NAME", "granite3.2:8b")
+    assert get_public_config()["LLM_MODEL_NAME"] == "granite3.2:8b"

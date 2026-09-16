@@ -62,7 +62,7 @@ make run-mcp-servers
 
 ```bash
 make run-ui
-# or: streamlit run streamlit_app/app.py
+# or: .venv/bin/streamlit run streamlit_app/app.py
 ```
 
 Set `RAG_USE_FALLBACK=true` in `.env` if Milvus is not running locally.
@@ -145,7 +145,7 @@ make demo-checklist-strict
 
 Presenter script and scenarios: [docs/DEMO_GUIDE.md](docs/DEMO_GUIDE.md)
 
-**Note:** The Streamlit **Dashboard** uses mock/illustrative analytics for presentation; **live data** is shown on the main chat, **Analytics** page, and **MCP Tools** page. See [DEMO_GUIDE.md §3](docs/DEMO_GUIDE.md#3-streamlit-ui-mock-vs-live-data).
+**Note:** The Streamlit **Dashboard** uses mock/illustrative analytics for presentation; **live data** is shown on the main chat, **Configuration** tab (read-only env), **Analytics** page, and **MCP Tools** page. See [DEMO_GUIDE.md §3](docs/DEMO_GUIDE.md#3-streamlit-ui-mock-vs-live-data).
 
 ## Configuration
 

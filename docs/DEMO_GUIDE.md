@@ -62,6 +62,7 @@ The sidebar links to several pages. **Know which are real before you present** �
 | Page | Data | Presenter note |
 |------|------|----------------|
 | **app** (main chat) | **Live** | Primary demo surface. Multi-agent queries use LLM, RAG, Search, and Analytics MCP against Postgres (when configured). |
+| **app → Configuration tab** | **Live (read-only)** | Shows **current environment settings** from `.env` / ConfigMap (MCP URLs, model name, fallbacks, redacted secrets). Does not edit config — changes require `.env` updates and a restart. |
 | **Dashboard** | **Mostly mock** | Query Analytics charts, Business Insights cards/table, and Alerts use **synthetic demo data** for visual impact. System Overview metrics are largely static/random. Agent Performance can show **in-session** agent counters if the chat app was used first in the same browser session — not historical Postgres data. |
 | **Agents** | **Mixed** | Live agent status when the crew is initialized; otherwise falls back to demo metrics. |
 | **Analytics** | **Live** | Inventory, customer, and product queries via Analytics MCP → PostgreSQL. Use this page to show **real retail data**. |
@@ -70,6 +71,8 @@ The sidebar links to several pages. **Know which are real before you present** �
 **Suggested talking point:** *"The Dashboard illustrates operational monitoring for executives; the chat and Analytics pages show the live AI and data layer underneath."*
 
 **Do not claim** Dashboard query volumes, business insight rows, or alert notifications are pulled from production telemetry — they are intentional placeholders for the demo narrative.
+
+**Configuration tab:** Safe to show during a demo when explaining how the stack is wired (Ollama vs kServe, Postgres vs JSON fallback, Tavily configured or not). Point out that `TAVILY_API_KEY` and `LLM_API_KEY` appear as `configured (redacted)` when set.
 
 ---
 

@@ -151,6 +151,7 @@ section "6. Streamlit UI — mock vs live (presenter notes)"
 cat <<'EOF'
   LIVE (safe to demo as real):
     • Main chat (app) — multi-agent queries, LLM, RAG, Search, Analytics MCP
+    • app → Configuration tab — read-only .env / ConfigMap values (secrets redacted)
     • Analytics page — PostgreSQL via Analytics MCP
     • MCP Tools page — direct MCP health checks and invocations
 

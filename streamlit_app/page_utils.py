@@ -17,6 +17,13 @@ import streamlit as st
 from config.settings import settings
 
 
+def load_public_config() -> dict[str, str]:
+    """Load redacted public config from the current environment."""
+    from config.settings import get_public_config
+
+    return get_public_config()
+
+
 def ensure_project_root() -> None:
     root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
     if root not in sys.path:

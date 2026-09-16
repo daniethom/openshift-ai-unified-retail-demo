@@ -118,8 +118,9 @@ run-mcp-servers: ## 🚀 Start all four MCP servers locally (background)
 
 .PHONY: run-ui
 run-ui: ## 🚀 Run the Streamlit UI locally
+	@test -x $(VENV_BIN)/streamlit || (echo "Virtual environment missing. Run 'make install' first." && exit 1)
 	@echo "Starting the Streamlit application..."
-	@streamlit run streamlit_app/app.py
+	@$(VENV_BIN)/streamlit run streamlit_app/app.py
 
 .PHONY: deploy-local
 deploy-local: ## ⚙️ Deploy to local OpenShift (CRC)

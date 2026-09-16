@@ -19,6 +19,7 @@ from typing import Any, Dict
 import streamlit as st
 
 from config.settings import settings
+from streamlit_app.page_utils import load_public_config
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -422,6 +423,30 @@ def display_metrics_dashboard():
         st.metric(label="System Health", value="98%", delta="+2%")
 
 
+def display_current_configuration():
+    """Show active environment configuration without exposing secrets."""
+    st.header("⚙️ Current Configuration")
+    st.caption(
+        "Values loaded from environment variables / `.env` at startup. "
+        "API keys and database passwords are not shown."
+    )
+
+    config_rows = [
+        {"Setting": key, "Value": value} for key, value in load_public_config().items()
+    ]
+    st.dataframe(config_rows, use_container_width=True, hide_index=True)
+
+    st.info(
+        "To change configuration, update `.env` locally or ConfigMap/Secret on "
+        "OpenShift, then restart MCP servers and Streamlit."
+    )
+
+    st.divider()
+    if st.button("🗑️ Clear Chat History", type="secondary"):
+        st.session_state.messages = []
+        st.rerun()
+
+
 def main():
     """Main application logic"""
     # Display header
@@ -435,7 +460,7 @@ def main():
     display_sidebar()
 
     # Main content area
-    tab1, tab2, tab3 = st.tabs(["💬 Chat", "📊 Dashboard", "🔧 Settings"])
+    tab1, tab2, tab3 = st.tabs(["💬 Chat", "📊 Dashboard", "⚙️ Configuration"])
 
     with tab1:
         display_chat_interface()
@@ -467,42 +492,7 @@ def main():
                     )
 
     with tab3:
-        st.header("⚙️ System Settings")
-
-        # Model settings
-        st.subheader("🧠 Model Configuration")
-
-        col1, col2 = st.columns(2)
-
-        with col1:
-            st.selectbox(
-                "LLM Model", ["granite-3b", "llama-3.2", "gpt-3.5-turbo"], index=0
-            )
-
-            st.slider("Temperature", min_value=0.0, max_value=1.0, value=0.7, step=0.1)
-
-        with col2:
-            st.number_input(
-                "Max Tokens", min_value=100, max_value=4000, value=2048, step=100
-            )
-
-            st.number_input("RAG Top-K Results", min_value=1, max_value=10, value=5)
-
-        # Agent settings
-        st.subheader("🤖 Agent Configuration")
-
-        st.checkbox("Enable Parallel Agent Execution", value=True)
-        st.checkbox("Enable Response Caching", value=True)
-
-        # Save settings button
-        if st.button("💾 Save Settings", type="primary"):
-            st.success("Settings saved successfully!")
-
-        # Clear chat button
-        st.divider()
-        if st.button("🗑️ Clear Chat History", type="secondary"):
-            st.session_state.messages = []
-            st.rerun()
+        display_current_configuration()
 
 
 if __name__ == "__main__":

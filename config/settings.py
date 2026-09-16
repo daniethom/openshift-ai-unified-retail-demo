@@ -38,6 +38,44 @@ def _env_bool(key: str, default: bool = False) -> bool:
     return raw.strip().lower() in {"1", "true", "yes", "on"}
 
 
+_PLACEHOLDER_SECRETS = frozenset(
+    {
+        "",
+        "your_key_here",
+        "replace-me",
+        "your_tavily_key",
+        "your-openshift-ai-token-if-required",
+    }
+)
+_NON_SECRET_API_KEYS = frozenset({"not-needed", "ollama"})
+
+
+def _secret_status(value: str) -> str:
+    if not value or value in _PLACEHOLDER_SECRETS:
+        return "not set"
+    if value in _NON_SECRET_API_KEYS:
+        return value
+    return "configured (redacted)"
+
+
+def _redact_database_url(url: str) -> str:
+    if not url:
+        return "(not set)"
+    try:
+        from urllib.parse import urlparse, urlunparse
+
+        parsed = urlparse(url)
+        if not parsed.password:
+            return url
+        username = parsed.username or ""
+        host = parsed.hostname or ""
+        port = f":{parsed.port}" if parsed.port else ""
+        netloc = f"{username}:***@{host}{port}" if username else f"***@{host}{port}"
+        return urlunparse(parsed._replace(netloc=netloc))
+    except Exception:
+        return "(configured — redacted)"
+
+
 @dataclass(frozen=True)
 class Settings:
     """Runtime settings for local development and OpenShift deployments."""
@@ -120,5 +158,38 @@ class Settings:
             "analytics_server": {"endpoint": self.analytics_mcp_url},
         }
 
+    def public_config(self) -> dict[str, str]:
+        """Non-secret configuration for Streamlit display and demo guides."""
+        return _build_public_config(self)
+
+
+def _build_public_config(cfg: Settings) -> dict[str, str]:
+    return {
+        "LLM_MCP_URL": cfg.llm_mcp_url,
+        "RAG_MCP_URL": cfg.rag_mcp_url,
+        "SEARCH_MCP_URL": cfg.search_mcp_url,
+        "ANALYTICS_MCP_URL": cfg.analytics_mcp_url,
+        "LLM_API_BASE": cfg.llm_api_base,
+        "LLM_MODEL_NAME": cfg.llm_model_name,
+        "LLM_API_KEY": _secret_status(cfg.llm_api_key),
+        "TAVILY_API_KEY": _secret_status(cfg.tavily_api_key),
+        "TAVILY_MAX_RESULTS": str(cfg.tavily_max_results),
+        "DATABASE_URL": _redact_database_url(cfg.database_url),
+        "USE_JSON_FALLBACK": str(cfg.use_json_fallback).lower(),
+        "RAG_USE_FALLBACK": str(cfg.rag_use_fallback).lower(),
+        "MILVUS_URI": cfg.milvus_uri,
+        "MILVUS_COLLECTION_NAME": cfg.milvus_collection_name,
+        "EMBEDDING_MODEL": cfg.embedding_model,
+        "DATA_PATH": cfg.data_path,
+        "OPENSHIFT_NAMESPACE": cfg.openshift_namespace,
+        "LOG_LEVEL": cfg.log_level,
+        "MERIDIAN_DEBUG": str(cfg.meridian_debug).lower(),
+    }
+
 
 settings = Settings.from_env()
+
+
+def get_public_config() -> dict[str, str]:
+    """Return non-secret configuration for UI display (always uses current env)."""
+    return _build_public_config(Settings.from_env())
