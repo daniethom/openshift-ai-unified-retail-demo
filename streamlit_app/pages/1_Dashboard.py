@@ -3,11 +3,7 @@ Dashboard Page for Meridian Retail AI
 Displays system overview and key metrics
 """
 
-import os
 import random
-
-# Import components
-import sys
 from datetime import datetime, timedelta
 
 import pandas as pd
@@ -15,14 +11,8 @@ import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
-from components.agent_status import AgentMetricsTracker, AgentStatusDisplay
-
-# Page config
-st.set_page_config(
-    page_title="Dashboard - Meridian Retail AI", page_icon="📊", layout="wide"
-)
+from streamlit_app.components.agent_status import AgentMetricsTracker, AgentStatusDisplay
+from streamlit_app.page_utils import ensure_agent_system, get_agent_statuses
 
 # Initialize components
 status_display = AgentStatusDisplay()
@@ -241,89 +231,8 @@ def render_agent_performance():
     """Render agent performance section"""
     st.header("🤖 Agent Performance")
 
-    # Get agent statuses (mock data for demo)
-    agent_statuses = {
-        "HomeAgent": {
-            "status": "active",
-            "role": "Chief AI Orchestrator",
-            "metrics": {
-                "queries_processed": 425,
-                "success_rate": 0.98,
-                "avg_response_time": 2.1,
-                "total_collaborations": 380,
-            },
-            "capabilities": [
-                "Query Analysis",
-                "Agent Orchestration",
-                "Response Synthesis",
-            ],
-        },
-        "InventoryAgent": {
-            "status": "active",
-            "role": "Inventory Management Specialist",
-            "metrics": {
-                "queries_processed": 120,
-                "success_rate": 0.96,
-                "avg_response_time": 1.8,
-                "total_collaborations": 95,
-            },
-            "capabilities": [
-                "Stock Checking",
-                "Demand Forecasting",
-                "Reorder Planning",
-            ],
-        },
-        "PricingAgent": {
-            "status": "busy",
-            "role": "Revenue Optimization Specialist",
-            "current_task": "Analyzing competitor pricing...",
-            "metrics": {
-                "queries_processed": 95,
-                "success_rate": 0.94,
-                "avg_response_time": 2.3,
-                "total_collaborations": 85,
-            },
-            "capabilities": [
-                "Price Optimization",
-                "Competitive Analysis",
-                "Promotion Planning",
-            ],
-        },
-        "CustomerAgent": {
-            "status": "active",
-            "role": "Customer Experience Specialist",
-            "metrics": {
-                "queries_processed": 85,
-                "success_rate": 0.97,
-                "avg_response_time": 1.5,
-                "total_collaborations": 70,
-            },
-            "capabilities": [
-                "Customer Support",
-                "Personalization",
-                "Loyalty Management",
-            ],
-        },
-        "TrendAgent": {
-            "status": "active",
-            "role": "Fashion Trend Analyst",
-            "metrics": {
-                "queries_processed": 75,
-                "success_rate": 0.95,
-                "avg_response_time": 2.7,
-                "total_collaborations": 65,
-            },
-            "capabilities": [
-                "Trend Analysis",
-                "Market Intelligence",
-                "Seasonal Forecasting",
-            ],
-        },
-    }
-
-    # Update session state
-    if "agent_statuses" not in st.session_state:
-        st.session_state.agent_statuses = agent_statuses
+    ensure_agent_system()
+    agent_statuses = get_agent_statuses()
 
     # Display components
     tabs = st.tabs(
