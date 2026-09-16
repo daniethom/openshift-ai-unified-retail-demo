@@ -22,7 +22,11 @@ help: ## ✨ Show this help message
 .PHONY: install
 install: ## 📦 Install all project dependencies into a virtual environment
 	@if [ ! -d "$(VENV_DIR)" ]; then \
-		$(PYTHON) -m venv $(VENV_DIR); \
+		if command -v python3.11 >/dev/null 2>&1; then \
+			python3.11 -m venv $(VENV_DIR); \
+		else \
+			$(PYTHON) -m venv $(VENV_DIR); \
+		fi; \
 		echo "Virtual environment created at $(VENV_DIR)"; \
 	fi
 	@source $(VENV_DIR)/bin/activate; \
@@ -107,6 +111,10 @@ demo-checklist-local: ## 📋 Demo-day checklist for local/CRC (skip kServe)
 .PHONY: demo-checklist-strict
 demo-checklist-strict: ## 📋 Demo-day checklist; fail if anything is not ready
 	@./scripts/demo-day-checklist.sh --namespace $(NAMESPACE) --strict --validate
+
+.PHONY: run-mcp-servers
+run-mcp-servers: ## 🚀 Start all four MCP servers locally (background)
+	@./scripts/start-mcp-servers.sh
 
 .PHONY: run-ui
 run-ui: ## 🚀 Run the Streamlit UI locally

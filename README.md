@@ -31,6 +31,7 @@ Meridian Retail Group is a fictional South African retail conglomerate:
 - [uv](https://github.com/astral-sh/uv) or pip
 - Tavily API key ([tavily.com](https://tavily.com))
 - Optional: Podman Desktop + `podman compose` for local PostgreSQL (see [DEPLOYMENT.md — Local development with Podman](docs/DEPLOYMENT.md#local-development-with-podman))
+- Optional: [Ollama](https://ollama.com) for local LLM (Granite 3.2 — see [DEPLOYMENT.md — Local LLM with Ollama](docs/DEPLOYMENT.md#local-llm-with-ollama))
 - Optional: Milvus for real RAG (Podman/Docker standalone — see deployment guide)
 - Optional: OpenShift CLI (`oc`) for cluster deployment
 
@@ -42,16 +43,19 @@ cd openshift-ai-unified-demo
 
 make install
 cp .env.example .env
-# Edit .env — set TAVILY_API_KEY at minimum
+# Edit .env — set TAVILY_API_KEY; configure Ollama LLM vars for local dev
+ollama pull granite3.2:8b   # optional local LLM
 ```
 
-### Run MCP servers (separate terminals)
+### Run MCP servers
 
 ```bash
-uvicorn mcp_servers.llm_server:app --port 8001
-uvicorn mcp_servers.rag_server:app --port 8002
-uvicorn mcp_servers.search_server:app --port 8003
-uvicorn mcp_servers.analytics_server:app --port 8004
+make run-mcp-servers
+# or start individually:
+# uvicorn mcp_servers.llm_server:app --port 8001
+# uvicorn mcp_servers.rag_server:app --port 8002
+# uvicorn mcp_servers.search_server:app --port 8003
+# uvicorn mcp_servers.analytics_server:app --port 8004
 ```
 
 ### Run the UI
@@ -62,6 +66,8 @@ make run-ui
 ```
 
 Set `RAG_USE_FALLBACK=true` in `.env` if Milvus is not running locally.
+
+For local LLM, set `LLM_API_BASE=http://127.0.0.1:11434/v1`, `LLM_MODEL_NAME=granite3.2:8b`, and `LLM_API_KEY=ollama` (see [DEPLOYMENT.md](docs/DEPLOYMENT.md#local-llm-with-ollama)).
 
 ## Architecture
 
@@ -148,8 +154,9 @@ All settings load from environment variables via `config/settings.py`. Copy `.en
 | Variable | Purpose |
 |----------|---------|
 | `LLM_MCP_URL`, `RAG_MCP_URL`, … | Full HTTP URLs to MCP services |
-| `LLM_API_BASE` | OpenAI-compatible kServe endpoint (`/v1`) |
-| `LLM_MODEL_NAME` | Model name on kServe (e.g. `granite-3b`) |
+| `LLM_API_BASE` | OpenAI-compatible endpoint — Ollama locally (`http://127.0.0.1:11434/v1`) or kServe on cluster |
+| `LLM_MODEL_NAME` | Model name — e.g. `granite3.2:8b` (Ollama) or `granite-3b` (kServe) |
+| `LLM_API_KEY` | API key — `ollama` for local Ollama; cluster token or `not-needed` for kServe |
 | `TAVILY_API_KEY` | Tavily search (Secret on cluster) |
 | `MILVUS_URI` | Milvus connection string |
 | `MILVUS_COLLECTION_NAME` | Vector collection (default: `meridian_knowledge`) |

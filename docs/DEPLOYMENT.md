@@ -268,7 +268,10 @@ Set in `.env`:
 ```bash
 RAG_USE_FALLBACK=true   # Skip Milvus for UI-only testing
 USE_JSON_FALLBACK=true  # Read data/*.json instead of PostgreSQL
-LLM_API_BASE=http://127.0.0.1:8080/v1   # Your local or cloud LLM endpoint
+# Local LLM via Ollama (see "Local LLM with Ollama" below)
+LLM_API_BASE=http://127.0.0.1:11434/v1
+LLM_MODEL_NAME=granite3.2:8b
+LLM_API_KEY=ollama
 ```
 
 For containerized PostgreSQL on a Podman workstation, see [Local development with Podman](#local-development-with-podman) below.
@@ -337,6 +340,45 @@ podman run -d --name meridian-pg \
 
 Use the same `DATABASE_URL`, `make migrate-db`, and `make seed-db` steps as above.
 
+### Local LLM with Ollama
+
+For local development, run [Ollama](https://ollama.com) instead of kServe. The LLM MCP server (`mcp_servers/llm_server.py`) uses the OpenAI-compatible client, so no code changes are required.
+
+**Recommended model:** `granite3.2:8b` — aligns with the production Granite story and supports RAG/tool-style tasks. For faster (lighter) responses on a laptop, use `granite3.2:2b`.
+
+```bash
+# Install Ollama, then pull a model
+ollama pull granite3.2:8b
+
+# Verify Ollama is listening
+curl -s http://127.0.0.1:11434/
+```
+
+Add to `.env`:
+
+```bash
+LLM_API_BASE="http://127.0.0.1:11434/v1"
+LLM_MODEL_NAME="granite3.2:8b"
+LLM_API_KEY="ollama"
+```
+
+Restart the LLM MCP server after changing `.env` (port 8001). Quick smoke test:
+
+```bash
+curl -sf http://127.0.0.1:8001/healthz
+curl -sf -X POST http://127.0.0.1:8001/invoke \
+  -H 'Content-Type: application/json' \
+  -d '{"prompt":"Reply with exactly: Granite is ready."}'
+```
+
+**Production vs local:**
+
+| Setting | Local (Ollama) | Production (kServe) |
+|---------|----------------|---------------------|
+| `LLM_API_BASE` | `http://127.0.0.1:11434/v1` | `http://granite-vllm-predictor…/v1` |
+| `LLM_MODEL_NAME` | `granite3.2:8b` (Ollama tag) | `granite-3b` (served name) |
+| `LLM_API_KEY` | `ollama` | cluster token or `not-needed` |
+
 ### Build and smoke-test the application image
 
 Mirrors the CI `build-image` job:
@@ -370,14 +412,15 @@ python scripts/prime_database.py --recreate
 ```bash
 make install
 cp .env.example .env
-# Set TAVILY_API_KEY; set DATABASE_URL / USE_JSON_FALLBACK as needed
+# Set TAVILY_API_KEY; configure Ollama LLM vars; set DATABASE_URL / USE_JSON_FALLBACK as needed
 
-podman compose up -d          # optional Postgres
-make migrate-db && make seed-db # when using Postgres
+ollama pull granite3.2:8b        # local LLM (see "Local LLM with Ollama" above)
+podman compose up -d             # optional Postgres
+make migrate-db && make seed-db  # when using Postgres
 
-# Four terminals — MCP servers on ports 8001–8004
+make run-mcp-servers             # MCP servers on ports 8001–8004
 make run-ui
-make test                       # USE_JSON_FALLBACK=true skips DB in CI-style runs
+make test                        # USE_JSON_FALLBACK=true skips DB in CI-style runs
 ```
 
 ## PostgreSQL data layer
