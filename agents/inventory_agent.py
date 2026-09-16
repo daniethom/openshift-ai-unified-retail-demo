@@ -172,9 +172,16 @@ class InventoryAgent(BaseAgent):
         query_lower = query.lower()
 
         if any(word in query_lower for word in ["optimize", "improve", "reduce cost"]):
-            if any(
-                word in query_lower
-                for word in ["summer", "winter", "season", "johannesburg", "stores"]
+            if (
+                "johannesburg" in query_lower
+                and any(
+                    word in query_lower
+                    for word in ["summer", "winter", "season", "store"]
+                )
+            ) or (
+                "across" in query_lower
+                and "stores" in query_lower
+                and "season" in query_lower
             ):
                 return "seasonal_optimization"
             return "optimization"
