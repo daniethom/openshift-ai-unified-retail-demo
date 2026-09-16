@@ -3,6 +3,13 @@ Dashboard Page for Meridian Retail AI
 Displays system overview and key metrics
 """
 
+import os
+import sys
+
+_PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+if _PROJECT_ROOT not in sys.path:
+    sys.path.insert(0, _PROJECT_ROOT)
+
 import random
 from datetime import datetime, timedelta
 
@@ -63,7 +70,7 @@ def render_query_analytics():
 
     # Create sample data for visualization
     hours = pd.date_range(
-        start=datetime.now() - timedelta(hours=24), end=datetime.now(), freq="H"
+        start=datetime.now() - timedelta(hours=24), end=datetime.now(), freq="h"
     )
 
     query_data = pd.DataFrame(
@@ -223,7 +230,7 @@ def render_business_insights():
         }
         return colors.get(val, "")
 
-    styled_df = insights_data.style.applymap(style_impact, subset=["Impact"])
+    styled_df = insights_data.style.map(style_impact, subset=["Impact"])
     st.dataframe(styled_df, use_container_width=True, hide_index=True)
 
 

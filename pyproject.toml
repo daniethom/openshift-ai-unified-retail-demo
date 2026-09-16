@@ -42,6 +42,8 @@ dependencies = [
     "llama-index",
     "sentence-transformers", # Crucial for creating embeddings
     "openai",              # <-- ADDED FOR PUBLIC LLM TESTING
+    "plotly",
+    "pandas",
 ]
 
 [project.urls]

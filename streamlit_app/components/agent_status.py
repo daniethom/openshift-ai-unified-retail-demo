@@ -566,6 +566,6 @@ def render_agent_comparison_table(agent_statuses: Dict[str, Dict[str, Any]]):
         }
         return colors.get(val, "")
 
-    styled_df = df.style.applymap(style_status, subset=["Status"])
+    styled_df = df.style.map(style_status, subset=["Status"])
 
     st.dataframe(styled_df, use_container_width=True, hide_index=True)
