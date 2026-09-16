@@ -1,8 +1,6 @@
 import os
 import sys
-from unittest.mock import MagicMock, patch
-
-import pytest
+from unittest.mock import MagicMock
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 
@@ -97,7 +95,14 @@ def test_prime_from_data_files_with_mocks(monkeypatch):
     monkeypatch.setattr(service, "ensure_collection", MagicMock())
     monkeypatch.setattr(
         "rag.service.build_knowledge_documents",
-        lambda: [{"id": "1", "source": "data/x.json", "content": "hello", "doc_type": "product"}],
+        lambda: [
+            {
+                "id": "1",
+                "source": "data/x.json",
+                "content": "hello",
+                "doc_type": "product",
+            }
+        ],
     )
 
     fake_model = MagicMock()

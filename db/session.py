@@ -5,7 +5,12 @@ from __future__ import annotations
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
-from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_sessionmaker, create_async_engine
+from sqlalchemy.ext.asyncio import (
+    AsyncEngine,
+    AsyncSession,
+    async_sessionmaker,
+    create_async_engine,
+)
 
 from config.settings import settings
 
@@ -38,7 +43,9 @@ def get_session_factory() -> async_sessionmaker[AsyncSession] | None:
 @asynccontextmanager
 async def session_scope() -> AsyncIterator[AsyncSession]:
     if _session_factory is None:
-        raise RuntimeError("Database is not configured. Set DATABASE_URL or USE_JSON_FALLBACK=true.")
+        raise RuntimeError(
+            "Database is not configured. Set DATABASE_URL or USE_JSON_FALLBACK=true."
+        )
 
     async with _session_factory() as session:
         yield session

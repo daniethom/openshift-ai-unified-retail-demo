@@ -17,7 +17,11 @@ async def test_search_fashion_trends_formats_results(monkeypatch):
         "agents.tools.search_tools.mcp_client.web_search",
         AsyncMock(
             return_value=[
-                {"title": "Utility wear rises", "content": "Gorpcore trend", "url": "https://x.test"}
+                {
+                    "title": "Utility wear rises",
+                    "content": "Gorpcore trend",
+                    "url": "https://x.test",
+                }
             ]
         ),
     )

@@ -34,7 +34,11 @@ app = FastAPI(
 
 @app.get("/healthz")
 async def health_check() -> dict[str, str]:
-    backend = "json" if settings.use_json_fallback or not settings.database_url else "postgres"
+    backend = (
+        "json"
+        if settings.use_json_fallback or not settings.database_url
+        else "postgres"
+    )
     return {"status": "ok", "data_backend": backend}
 
 
@@ -48,25 +52,35 @@ async def invoke_tool(payload: ToolInput):
     if tool_name == "get_product_count_by_brand":
         brand_name = payload.input_data.get("brand_name")
         if not brand_name:
-            raise HTTPException(status_code=400, detail="Missing 'brand_name' for this tool.")
-        return ToolOutput(result=await data_service.get_product_count_by_brand(brand_name))
+            raise HTTPException(
+                status_code=400, detail="Missing 'brand_name' for this tool."
+            )
+        return ToolOutput(
+            result=await data_service.get_product_count_by_brand(brand_name)
+        )
 
     if tool_name == "get_product_details":
         product_id = payload.input_data.get("product_id")
         if not product_id:
-            raise HTTPException(status_code=400, detail="Missing 'product_id' for this tool.")
+            raise HTTPException(
+                status_code=400, detail="Missing 'product_id' for this tool."
+            )
         return ToolOutput(result=await data_service.get_product_details(product_id))
 
     if tool_name == "get_demand_analytics":
         product_id = payload.input_data.get("product_id")
         if not product_id:
-            raise HTTPException(status_code=400, detail="Missing 'product_id' for this tool.")
+            raise HTTPException(
+                status_code=400, detail="Missing 'product_id' for this tool."
+            )
         return ToolOutput(result=await data_service.get_demand_analytics(product_id))
 
     if tool_name == "get_customer_profile":
         customer_id = payload.input_data.get("customer_id")
         if not customer_id:
-            raise HTTPException(status_code=400, detail="Missing 'customer_id' for this tool.")
+            raise HTTPException(
+                status_code=400, detail="Missing 'customer_id' for this tool."
+            )
         return ToolOutput(result=await data_service.get_customer_profile(customer_id))
 
     if tool_name == "search_customers_by_name":

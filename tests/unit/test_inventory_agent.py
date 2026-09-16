@@ -11,7 +11,9 @@ from agents.inventory_agent import InventoryAgent
 
 @pytest.fixture
 def inventory_agent():
-    agent = InventoryAgent(mcp_servers={"analytics_server": MagicMock()}, data_store=MagicMock())
+    agent = InventoryAgent(
+        mcp_servers={"analytics_server": MagicMock()}, data_store=MagicMock()
+    )
     agent._query_stock = AsyncMock(
         return_value={
             "on_hand": 50,
@@ -21,7 +23,11 @@ def inventory_agent():
         }
     )
     agent._get_product_info = AsyncMock(
-        return_value={"product_id": "MF001", "name": "Classic Wool Trench Coat", "price": 3499.99}
+        return_value={
+            "product_id": "MF001",
+            "name": "Classic Wool Trench Coat",
+            "price": 3499.99,
+        }
     )
     return agent
 

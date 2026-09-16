@@ -35,7 +35,9 @@ class Customer(Base):
     email: Mapped[str] = mapped_column(String(255), nullable=False, default="")
     phone_number: Mapped[str] = mapped_column(String(32), nullable=False, default="")
     location: Mapped[str] = mapped_column(String(255), nullable=False, default="")
-    loyalty_tier: Mapped[str] = mapped_column(String(32), nullable=False, default="Bronze")
+    loyalty_tier: Mapped[str] = mapped_column(
+        String(32), nullable=False, default="Bronze"
+    )
     preferred_brands: Mapped[list] = mapped_column(JSONB, nullable=False, default=list)
     purchase_history: Mapped[list] = mapped_column(JSONB, nullable=False, default=list)
     demographics: Mapped[dict] = mapped_column(JSONB, nullable=False, default=dict)
@@ -48,8 +50,12 @@ class FashionTrend(Base):
     title: Mapped[str] = mapped_column(String(255), nullable=False)
     description: Mapped[str] = mapped_column(Text, nullable=False, default="")
     season: Mapped[str] = mapped_column(String(64), nullable=False, default="")
-    target_demographic: Mapped[str] = mapped_column(String(128), nullable=False, default="")
-    related_categories: Mapped[list] = mapped_column(JSONB, nullable=False, default=list)
+    target_demographic: Mapped[str] = mapped_column(
+        String(128), nullable=False, default=""
+    )
+    related_categories: Mapped[list] = mapped_column(
+        JSONB, nullable=False, default=list
+    )
     key_colors: Mapped[list] = mapped_column(JSONB, nullable=False, default=list)
     key_materials: Mapped[list] = mapped_column(JSONB, nullable=False, default=list)
     regional_relevance: Mapped[str] = mapped_column(Text, nullable=False, default="")

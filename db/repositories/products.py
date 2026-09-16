@@ -54,5 +54,7 @@ async def total_inventory_value(session: AsyncSession) -> dict:
     return {
         "total_stock_value_zar": round(total_value, 2),
         "total_product_count": product_count,
-        "average_value_per_product": round(total_value / product_count if product_count else 0, 2),
+        "average_value_per_product": round(
+            total_value / product_count if product_count else 0, 2
+        ),
     }

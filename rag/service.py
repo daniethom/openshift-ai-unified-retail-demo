@@ -153,7 +153,9 @@ def fallback_documents(query: str, top_k: int = 3) -> list[dict[str, Any]]:
     query_lower = query.lower()
     ranked = sorted(
         DEFAULT_FALLBACK_DOCS,
-        key=lambda doc: int(any(token in doc["content"].lower() for token in query_lower.split())),
+        key=lambda doc: int(
+            any(token in doc["content"].lower() for token in query_lower.split())
+        ),
         reverse=True,
     )
     return ranked[:top_k]

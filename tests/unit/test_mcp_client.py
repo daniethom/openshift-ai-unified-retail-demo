@@ -17,7 +17,9 @@ async def test_invoke_tool_returns_result(monkeypatch):
         AsyncMock(return_value={"status": "success", "result": {"value": 42}}),
     )
 
-    result = await mcp_client.invoke_tool("http://analytics:8004", "get_total_inventory_value")
+    result = await mcp_client.invoke_tool(
+        "http://analytics:8004", "get_total_inventory_value"
+    )
 
     assert result == {"value": 42}
 

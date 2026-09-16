@@ -18,11 +18,13 @@ async def test_agent_system_interface_initialize():
     from streamlit_app.app import AgentSystemInterface
 
     mock_home = MagicMock()
-    with patch("agents.home_agent.HomeAgent", return_value=mock_home), patch(
-        "agents.inventory_agent.InventoryAgent", return_value=MagicMock()
-    ), patch("agents.pricing_agent.PricingAgent", return_value=MagicMock()), patch(
-        "agents.customer_agent.CustomerAgent", return_value=MagicMock()
-    ), patch("agents.trend_agent.TrendAgent", return_value=MagicMock()):
+    with (
+        patch("agents.home_agent.HomeAgent", return_value=mock_home),
+        patch("agents.inventory_agent.InventoryAgent", return_value=MagicMock()),
+        patch("agents.pricing_agent.PricingAgent", return_value=MagicMock()),
+        patch("agents.customer_agent.CustomerAgent", return_value=MagicMock()),
+        patch("agents.trend_agent.TrendAgent", return_value=MagicMock()),
+    ):
         interface = AgentSystemInterface()
         success = await interface.initialize()
 

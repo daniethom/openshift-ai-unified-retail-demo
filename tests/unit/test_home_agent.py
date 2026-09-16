@@ -1,15 +1,16 @@
-import pytest
-from unittest.mock import MagicMock, AsyncMock
-import sys
 import os
-from typing import Dict, Any, List
+import sys
+from unittest.mock import AsyncMock, MagicMock
+
+import pytest
 
 # Add the project root to the path
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 
 from agents.home_agent import HomeAgent, QueryComplexity
 
 # --- Pytest Fixtures ---
+
 
 @pytest.fixture
 def mock_specialized_agents():
@@ -28,7 +29,7 @@ def mock_specialized_agents():
     mock_customer = MagicMock()
     mock_customer.process_query = AsyncMock(return_value={"result": "customer_data"})
     mock_customer.name = "CustomerAgent"
-    
+
     mock_trend = MagicMock()
     mock_trend.process_query = AsyncMock(return_value={"result": "trend_data"})
     mock_trend.name = "TrendAgent"
@@ -40,6 +41,7 @@ def mock_specialized_agents():
         "TrendAgent": mock_trend,
     }
 
+
 @pytest.fixture
 def home_agent(mock_specialized_agents):
     """
@@ -47,11 +49,13 @@ def home_agent(mock_specialized_agents):
     """
     # The mcp_servers can be a simple dict for these tests
     mcp_servers = {"mock_server": {}}
-    
+
     agent = HomeAgent(mcp_servers=mcp_servers, agent_registry=mock_specialized_agents)
     return agent
 
+
 # --- Test Cases ---
+
 
 @pytest.mark.asyncio
 async def test_analyze_query_simple(home_agent):
@@ -60,15 +64,16 @@ async def test_analyze_query_simple(home_agent):
     """
     # Arrange
     query = "What is the stock level of product MF001?"
-    
+
     # Act
     analysis = await home_agent._analyze_query(query, {})
-    
+
     # Assert
     assert analysis["complexity"] == QueryComplexity.SIMPLE
     assert analysis["required_agents"] == ["InventoryAgent"]
     assert analysis["strategy"] == "direct"
     assert "stock" in analysis["keywords"]
+
 
 @pytest.mark.asyncio
 async def test_analyze_query_complex_analytical(home_agent):
@@ -78,18 +83,25 @@ async def test_analyze_query_complex_analytical(home_agent):
     """
     # Arrange
     query = "Analyze pricing for winter coats based on current stock and market trends."
-    
+
     # Act
     analysis = await home_agent._analyze_query(query, {})
-    
+
     # Assert
     assert analysis["complexity"] == QueryComplexity.MODERATE
-    assert set(analysis["required_agents"]) == {"PricingAgent", "InventoryAgent", "TrendAgent"}
+    assert set(analysis["required_agents"]) == {
+        "PricingAgent",
+        "InventoryAgent",
+        "TrendAgent",
+    }
     assert analysis["strategy"] == "parallel"
     assert analysis["intent"]["question_type"] == "analytical"
 
+
 @pytest.mark.asyncio
-async def test_process_simple_query_orchestration(home_agent, mock_specialized_agents, monkeypatch):
+async def test_process_simple_query_orchestration(
+    home_agent, mock_specialized_agents, monkeypatch
+):
     """
     Tests the end-to-end orchestration for a simple query.
     It mocks the analysis step to force a simple path and verifies that the
@@ -101,10 +113,12 @@ async def test_process_simple_query_orchestration(home_agent, mock_specialized_a
         "complexity": QueryComplexity.SIMPLE,
         "required_agents": ["InventoryAgent"],
         "strategy": "direct",
-        "context_enhanced": {}
+        "context_enhanced": {},
     }
     # We mock _analyze_query to isolate the orchestration logic of process_query
-    monkeypatch.setattr(home_agent, '_analyze_query', AsyncMock(return_value=mock_analysis_result))
+    monkeypatch.setattr(
+        home_agent, "_analyze_query", AsyncMock(return_value=mock_analysis_result)
+    )
 
     # Act
     result = await home_agent.process_query(query, {})
@@ -114,12 +128,15 @@ async def test_process_simple_query_orchestration(home_agent, mock_specialized_a
     mock_specialized_agents["InventoryAgent"].process_query.assert_awaited_once()
     # Check that other agents were NOT called
     mock_specialized_agents["PricingAgent"].process_query.assert_not_awaited()
-    
+
     assert result["status"] == "success"
     assert "InventoryAgent" in result["response"]["detailed_insights"]
 
+
 @pytest.mark.asyncio
-async def test_process_moderate_parallel_query(home_agent, mock_specialized_agents, monkeypatch):
+async def test_process_moderate_parallel_query(
+    home_agent, mock_specialized_agents, monkeypatch
+):
     """
     Tests the orchestration for a moderate query that should run in parallel.
     """
@@ -130,9 +147,11 @@ async def test_process_moderate_parallel_query(home_agent, mock_specialized_agen
         "required_agents": ["PricingAgent", "InventoryAgent"],
         "strategy": "parallel",
         "keywords": ["price", "stock"],
-        "context_enhanced": {}
+        "context_enhanced": {},
     }
-    monkeypatch.setattr(home_agent, '_analyze_query', AsyncMock(return_value=mock_analysis_result))
+    monkeypatch.setattr(
+        home_agent, "_analyze_query", AsyncMock(return_value=mock_analysis_result)
+    )
 
     # Act
     result = await home_agent.process_query(query, {})
@@ -148,6 +167,7 @@ async def test_process_moderate_parallel_query(home_agent, mock_specialized_agen
     assert "PricingAgent" in result["response"]["detailed_insights"]
     assert "InventoryAgent" in result["response"]["detailed_insights"]
 
+
 @pytest.mark.asyncio
 async def test_process_query_error_handling(home_agent, monkeypatch):
     """
@@ -157,11 +177,15 @@ async def test_process_query_error_handling(home_agent, monkeypatch):
     # Arrange
     query = "this will fail"
     # Mock the analysis step to raise an exception
-    monkeypatch.setattr(home_agent, '_analyze_query', AsyncMock(side_effect=Exception("Simulated analysis failure")))
+    monkeypatch.setattr(
+        home_agent,
+        "_analyze_query",
+        AsyncMock(side_effect=Exception("Simulated analysis failure")),
+    )
 
     # Act
     result = await home_agent.process_query(query, {})
-    
+
     # Assert
     assert result["status"] == "error"
     assert result["error"] == "Simulated analysis failure"

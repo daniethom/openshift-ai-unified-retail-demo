@@ -66,7 +66,9 @@ async def test_process_query_handles_support_request(customer_agent, monkeypatch
 
 
 @pytest.mark.asyncio
-async def test_process_query_handles_recommendation_request(customer_agent, monkeypatch):
+async def test_process_query_handles_recommendation_request(
+    customer_agent, monkeypatch
+):
     query = "I need a new pair of shoes."
     context = {"customer_id": "CUST123"}
 

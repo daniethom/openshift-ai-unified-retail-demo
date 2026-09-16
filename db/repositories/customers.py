@@ -34,9 +34,9 @@ async def search_by_name(session: AsyncSession, name: str) -> list[Customer]:
             or_(
                 func.lower(Customer.first_name).like(needle),
                 func.lower(Customer.last_name).like(needle),
-                func.lower(func.concat(Customer.first_name, " ", Customer.last_name)).like(
-                    needle
-                ),
+                func.lower(
+                    func.concat(Customer.first_name, " ", Customer.last_name)
+                ).like(needle),
             )
         )
     )

@@ -64,4 +64,6 @@ def test_invoke_non_existent_tool_returns_404(client):
     response = client.post("/invoke", json=payload)
 
     assert response.status_code == 404
-    assert "Tool 'discover_new_planets' not found" in response.json()["detail"].rstrip(".")
+    assert "Tool 'discover_new_planets' not found" in response.json()["detail"].rstrip(
+        "."
+    )

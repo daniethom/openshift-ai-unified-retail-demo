@@ -21,7 +21,9 @@ def prime_database(recreate: bool = False) -> None:
     inserted = result.get("inserted", 0)
 
     if inserted == 0:
-        logger.error("No documents were inserted. Check data files and Milvus connectivity.")
+        logger.error(
+            "No documents were inserted. Check data files and Milvus connectivity."
+        )
         sys.exit(1)
 
     logger.info("Database priming complete. Inserted %s documents.", inserted)

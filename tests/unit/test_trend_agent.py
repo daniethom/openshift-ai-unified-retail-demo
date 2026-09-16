@@ -21,7 +21,9 @@ async def test_process_query_success(trend_agent, monkeypatch):
         "_gather_trend_data",
         AsyncMock(
             return_value={
-                "current_trends": {"trends": [{"name": "Utility Wear", "relevance": 0.9}]},
+                "current_trends": {
+                    "trends": [{"name": "Utility Wear", "relevance": 0.9}]
+                },
                 "historical_patterns": [],
                 "competitor_insights": {},
                 "social_media": {},
@@ -52,10 +54,16 @@ async def test_process_query_success(trend_agent, monkeypatch):
 @pytest.mark.asyncio
 async def test_process_query_uses_search_and_rag(trend_agent, monkeypatch):
     mock_search = AsyncMock(
-        return_value={"trends": [{"name": "mock_trend", "relevance": 0.9, "growth": "rising"}]}
+        return_value={
+            "trends": [{"name": "mock_trend", "relevance": 0.9, "growth": "rising"}]
+        }
     )
-    mock_rag = AsyncMock(return_value=[{"source": "mock_report.pdf", "content": "test"}])
-    monkeypatch.setattr(trend_agent.trend_searcher, "search_fashion_trends", mock_search)
+    mock_rag = AsyncMock(
+        return_value=[{"source": "mock_report.pdf", "content": "test"}]
+    )
+    monkeypatch.setattr(
+        trend_agent.trend_searcher, "search_fashion_trends", mock_search
+    )
     monkeypatch.setattr(trend_agent.rag_retriever, "retrieve", mock_rag)
     monkeypatch.setattr(
         trend_agent,

@@ -1,4 +1,3 @@
-import json
 import os
 import sys
 from unittest.mock import AsyncMock
@@ -72,7 +71,9 @@ def test_invoke_get_product_count_by_brand_success(client):
 
 
 def test_invoke_non_existent_tool_returns_404(client):
-    response = client.post("/invoke", json={"tool_name": "calculate_the_meaning_of_life"})
+    response = client.post(
+        "/invoke", json={"tool_name": "calculate_the_meaning_of_life"}
+    )
 
     assert response.status_code == 404
     assert "Tool 'calculate_the_meaning_of_life' not found" in response.json()["detail"]
@@ -90,10 +91,17 @@ def test_invoke_get_customer_profile_success(client, monkeypatch):
     monkeypatch.setattr(
         "db.service.get_customer_profile",
         AsyncMock(
-            return_value={"customer_id": "CUST001", "first_name": "Sarah", "last_name": "Johnson"}
+            return_value={
+                "customer_id": "CUST001",
+                "first_name": "Sarah",
+                "last_name": "Johnson",
+            }
         ),
     )
-    payload = {"tool_name": "get_customer_profile", "input_data": {"customer_id": "CUST001"}}
+    payload = {
+        "tool_name": "get_customer_profile",
+        "input_data": {"customer_id": "CUST001"},
+    }
     response = client.post("/invoke", json=payload)
 
     assert response.status_code == 200

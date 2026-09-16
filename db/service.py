@@ -14,7 +14,11 @@ from db.session import get_session_factory, session_scope
 
 
 def _use_json_fallback() -> bool:
-    return settings.use_json_fallback or not settings.database_url or get_session_factory() is None
+    return (
+        settings.use_json_fallback
+        or not settings.database_url
+        or get_session_factory() is None
+    )
 
 
 async def get_total_inventory_value() -> dict[str, Any]:

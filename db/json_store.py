@@ -43,7 +43,9 @@ def get_total_inventory_value() -> dict[str, Any]:
     return {
         "total_stock_value_zar": round(total_value, 2),
         "total_product_count": product_count,
-        "average_value_per_product": round(total_value / product_count if product_count else 0, 2),
+        "average_value_per_product": round(
+            total_value / product_count if product_count else 0, 2
+        ),
     }
 
 
@@ -97,5 +99,6 @@ def search_customers_by_name(name: str) -> list[dict[str, Any]]:
         for customer in load_customers()
         if needle in customer.get("first_name", "").lower()
         or needle in customer.get("last_name", "").lower()
-        or needle in f"{customer.get('first_name', '')} {customer.get('last_name', '')}".lower()
+        or needle
+        in f"{customer.get('first_name', '')} {customer.get('last_name', '')}".lower()
     ]

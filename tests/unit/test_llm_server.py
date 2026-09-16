@@ -40,7 +40,9 @@ def test_invoke_generate_text_success(client, mock_openai_client):
     mock_openai_client.chat.completions.create.assert_called_once()
 
 
-def test_invoke_generate_text_with_missing_prompt_returns_422(client, mock_openai_client):
+def test_invoke_generate_text_with_missing_prompt_returns_422(
+    client, mock_openai_client
+):
     response = client.post("/invoke", json={})
 
     assert response.status_code == 422

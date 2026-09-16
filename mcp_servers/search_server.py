@@ -2,11 +2,11 @@
 
 import logging
 import os
+from typing import Any, Dict, List
 
 import uvicorn
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-from typing import Dict, Any, List
 
 from config.settings import settings
 
@@ -91,7 +91,9 @@ async def invoke_tool(payload: ToolInput):
     if payload.tool_name == "web_search":
         query = payload.input_data.get("query")
         if not query:
-            raise HTTPException(status_code=400, detail="Missing 'query' in input_data.")
+            raise HTTPException(
+                status_code=400, detail="Missing 'query' in input_data."
+            )
 
         max_results = payload.input_data.get("max_results")
         search_results = tavily_search(
@@ -100,7 +102,9 @@ async def invoke_tool(payload: ToolInput):
         )
         return ToolOutput(result=search_results)
 
-    raise HTTPException(status_code=404, detail=f"Tool '{payload.tool_name}' not found.")
+    raise HTTPException(
+        status_code=404, detail=f"Tool '{payload.tool_name}' not found."
+    )
 
 
 if __name__ == "__main__":

@@ -2,11 +2,11 @@
 
 import logging
 import os
+from typing import Any, Dict, List
 
 import uvicorn
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-from typing import Dict, Any, List
 
 from config.settings import settings
 from rag.service import get_rag_service
@@ -54,13 +54,17 @@ async def invoke_tool(payload: ToolInput):
     if payload.tool_name == "retrieve_documents":
         query = payload.input_data.get("query")
         if not query:
-            raise HTTPException(status_code=400, detail="Missing 'query' in input_data.")
+            raise HTTPException(
+                status_code=400, detail="Missing 'query' in input_data."
+            )
 
         top_k = int(payload.input_data.get("top_k", 5))
         documents = retrieve_documents(query=query, top_k=top_k)
         return ToolOutput(result=documents)
 
-    raise HTTPException(status_code=404, detail=f"Tool '{payload.tool_name}' not found.")
+    raise HTTPException(
+        status_code=404, detail=f"Tool '{payload.tool_name}' not found."
+    )
 
 
 if __name__ == "__main__":
