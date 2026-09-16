@@ -3,6 +3,8 @@
 # --- Variables ---
 PYTHON = python3
 VENV_DIR = .venv
+VENV_BIN = $(VENV_DIR)/bin
+VENV_PYTHON = $(VENV_BIN)/python
 NAMESPACE = retail-ai-demo
 SHELL := /bin/bash
 
@@ -25,7 +27,7 @@ install: ## 📦 Install all project dependencies into a virtual environment
 	fi
 	@source $(VENV_DIR)/bin/activate; \
 	pip install uv; \
-	uv pip install --system -e ".[dev,model]";
+	uv pip install -e ".[dev,model]";
 	@echo "✅ Dependencies installed successfully."
 
 .PHONY: lint
@@ -60,11 +62,11 @@ test-cov: ## 🧪 Run tests with coverage gate (75% on core packages)
 
 .PHONY: migrate-db
 migrate-db: ## 🗄️ Run Alembic migrations against DATABASE_URL
-	@alembic upgrade head
+	@$(VENV_PYTHON) -m alembic upgrade head
 
 .PHONY: seed-db
 seed-db: ## 🌱 Load data/*.json into PostgreSQL (requires DATABASE_URL)
-	@python -m db.seed
+	@$(VENV_PYTHON) -m db.seed
 
 .PHONY: build-images
 build-images: ## 🐳 Build and push image to OpenShift internal registry
