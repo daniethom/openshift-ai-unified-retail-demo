@@ -1,29 +1,32 @@
-import os
-import pandas as pd
-from pymilvus import MilvusClient
-from sentence_transformers import SentenceTransformer
+"""Prime the Milvus knowledge base from project JSON data files."""
 
-# --- Configuration from Environment Variables ---
-MILVUS_URI = os.getenv("MILVUS_URI")
-COLLECTION_NAME = "product_data"
-MODEL_NAME = 'all-MiniLM-L6-v2'
+from __future__ import annotations
 
-def prime_database():
-    print("Starting database priming...")
-    client = MilvusClient(uri=MILVUS_URI)
-    if not client.has_collection(collection_name=COLLECTION_NAME):
-        print(f"Collection {COLLECTION_NAME} not found. Exiting.")
-        return
+import logging
+import sys
 
-    model = SentenceTransformer(MODEL_NAME)
-    data = pd.read_csv("data/retail_products.csv")
+from config.settings import settings
+from rag.service import get_rag_service
 
-    # --- Generate Embeddings and Insert Data (add your specific logic) ---
-    print(f"Processing {len(data)} records...")
-    # for index, row in data.iterrows():
-    #     # ... your embedding and insertion logic here ...
+logging.basicConfig(level=settings.log_level)
+logger = logging.getLogger(__name__)
 
-    print("Database priming complete.")
+
+def prime_database(recreate: bool = False) -> None:
+    logger.info("Starting Milvus priming against %s", settings.milvus_uri)
+    logger.info("Target collection: %s", settings.milvus_collection_name)
+
+    service = get_rag_service()
+    result = service.prime_from_data_files(recreate=recreate)
+    inserted = result.get("inserted", 0)
+
+    if inserted == 0:
+        logger.error("No documents were inserted. Check data files and Milvus connectivity.")
+        sys.exit(1)
+
+    logger.info("Database priming complete. Inserted %s documents.", inserted)
+
 
 if __name__ == "__main__":
-    prime_database()
+    recreate_flag = "--recreate" in sys.argv
+    prime_database(recreate=recreate_flag)

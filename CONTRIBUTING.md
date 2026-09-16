@@ -1,86 +1,132 @@
-# Contributing to the Meridian Retail AI Demo #
+# Contributing to the Meridian Retail AI Demo
 
-First off, thank you for considering contributing! We welcome all contributions, from bug reports to new features. This document provides guidelines to help you get started.
+Thank you for contributing. This document covers setup, standards, testing, and the pull request process.
 
-**Getting Started**
+## Getting started
 
-To ensure you have a smooth development experience, please follow these steps to set up your environment:
+1. **Fork and clone** the repository.
+2. **Install dependencies:**
 
-- Fork & Clone: Fork the repository to your own GitHub account and then clone it to your local machine.
+   ```bash
+   make install
+   ```
 
-- Set Up Environment: The project uses a Makefile to simplify setup. From the root of the project, run:
+   Installs `[dev,model]` extras (pytest, ruff, black, huggingface_hub).
 
-    ```bash
-    make install
-    ```
+3. **Configure environment:**
 
-    This command will create a Python virtual environment and install all the necessary dependencies listed in pyproject.toml.
+   ```bash
+   cp .env.example .env
+   ```
 
-- Configure Environment: Copy the .env.example file to a new file named .env and fill in the required API keys and configuration variables.
+   Set at minimum `TAVILY_API_KEY`. Use `RAG_USE_FALLBACK=true` if Milvus is not running locally.
 
-**Development Workflow**
+4. **Optional — interactive setup:**
 
-- Create a Feature Branch: All new work should be done on a feature branch. Name your branch descriptively.
+   ```bash
+   ./scripts/setup.sh
+   ```
 
-    ```bash
-    git checkout -b feature/your-amazing-feature
-    ```
+## Development workflow
 
-
-- Make Small, Logical Commits: Try to keep your commits small and focused on a single logical change. This makes code reviews easier and helps maintain a clean project history. Write clear and concise commit messages.
-
-**Code Standards**
-
-To maintain a consistent and high-quality codebase, we use automated tools for linting and formatting.
-
-- Linting: We use ruff to identify potential issues.
-
-- Formatting: We use black for consistent code formatting.
-
-Before you commit your changes, please run the following commands to ensure your code adheres to our standards:
+Create a feature branch:
 
 ```bash
-# Check for linting issues and formatting errors
-make lint
-
-# Automatically fix linting and formatting issues
-make format
+git checkout -b feature/your-feature-name
 ```
 
-**Testing**
+Keep commits focused with clear messages.
 
-We aim for a high level of test coverage. All new features or bug fixes must be accompanied by corresponding tests.
+## Project conventions
 
-Before submitting your contribution for review, please run the full test suite to ensure that your changes haven't broken any existing functionality.
+### Configuration
+
+- Add new environment variables to **`config/settings.py`** and **`.env.example`**
+- Patch OpenShift values in **`k8s/base/configmap.yaml`** and overlays — do not hardcode URLs in application code
+- Legacy names (e.g. `GRANITE_ENDPOINT`) should remain as aliases when renamed
+
+### MCP integration
+
+- Agents call MCP servers only through **`agents/mcp_client.py`**
+- New tools: add handler in the relevant `mcp_servers/*.py` file and a client function in `mcp_client.py`
+
+### Kubernetes
+
+- Base manifests: `k8s/base/`
+- Environment-specific patches: `k8s/overlays/local/` or `production/`
+- Validate with: `kubectl kustomize k8s/overlays/local`
+
+## Code standards
+
+- **Lint:** Ruff (`make lint`)
+- **Format:** Black (`make format`)
+
+Before committing:
 
 ```bash
-# Run the entire unit and integration test suite
+make format
+make lint
 make test
 ```
 
-**Pull Request Process**
+## Testing
 
-When you are ready to submit your contribution, please follow these steps:
+```bash
+make test                    # Full suite (sets RAG_USE_FALLBACK=true)
+pytest tests/unit            # Unit tests only
+pytest tests/integration       # Integration tests
+```
 
-- Push your feature branch to your fork on GitHub.
+Add tests for new behavior:
 
-- Create a Pull Request (PR) to the main branch of the original repository.
+- MCP servers: `tests/unit/test_*_server.py`
+- MCP client: `tests/unit/test_mcp_client.py`
+- Settings: `tests/unit/test_settings.py`
+- RAG: `tests/unit/test_rag_service.py`
 
-- Ensure your PR includes a descriptive title and a clear summary of the changes you've made. If it resolves an existing issue, please reference it (e.g., "Closes #123").
+CI (`.github/workflows/ci.yml`) runs lint, test, and Docker build on push/PR.
 
-**Pull Request Checklist**
+## OpenShift and deployment changes
 
-Before you submit your PR, please make sure you have completed the following:
+If you change deployment manifests or scripts:
 
-[ ] My code follows the style guidelines of this project (make format).
+1. Verify Kustomize builds: `kubectl kustomize k8s/overlays/production`
+2. Update **[docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)** and **[README.md](README.md)** if commands or flags change
+3. Test validation: `make validate-local` (CRC) or document production-only steps
 
-[ ] I have run the linter and there are no new warnings (make lint).
+Useful Makefile targets when testing deploy changes:
 
-[ ] I have added tests that prove my fix is effective or that my feature works.
+```bash
+make build-images-local
+make deploy-local-full
+make demo-checklist-local
+```
 
-[ ] All new and existing tests pass locally with my changes (make test).
+## Pull request process
 
-[ ] I have written a clear and descriptive PR title and summary.
+1. Push your branch to your fork.
+2. Open a PR against `main`.
+3. Include a clear title and summary; reference issues (e.g. "Closes #123").
 
+### PR checklist
 
-***Thank you again for your contribution!***
+- [ ] Code follows project style (`make format`, `make lint`)
+- [ ] Tests added or updated for the change
+- [ ] `make test` passes locally
+- [ ] Documentation updated if behavior, config, or deploy steps changed
+- [ ] No secrets or `.env` files committed
+
+## Documentation
+
+When changing architecture, MCP contracts, or deployment:
+
+| Change type | Update |
+|-------------|--------|
+| User-visible features or fixes | `CHANGELOG.md` (under `[Unreleased]`) |
+| Config / env vars | `.env.example`, `docs/DEPLOYMENT.md`, README configuration table |
+| MCP API | `docs/MCP_INTEGRATION.md` |
+| Agents | `docs/MULTI_AGENT_DESIGN.md` |
+| Demo flow | `docs/DEMO_GUIDE.md` |
+| System design | `docs/ARCHITECTURE.md` |
+
+Thank you for helping improve the demo.

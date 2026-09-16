@@ -1,0 +1,31 @@
+# k8s/overlays/production/inferenceservice-granite.yaml
+# Deploys Granite via kServe/vLLM on OpenShift AI.
+# Update storageUri and runtime to match your cluster model registry.
+apiVersion: serving.kserve.io/v1beta1
+kind: InferenceService
+metadata:
+  name: granite-vllm
+  namespace: retail-ai-demo
+  annotations:
+    serving.kserve.io/deploymentMode: RawDeployment
+spec:
+  predictor:
+    automountServiceAccountToken: false
+    model:
+      modelFormat:
+        name: vLLM
+      storageUri: pvc://granite-model-storage/granite-3b
+      resources:
+        requests:
+          cpu: "4"
+          memory: 16Gi
+          nvidia.com/gpu: "1"
+        limits:
+          cpu: "8"
+          memory: 24Gi
+          nvidia.com/gpu: "1"
+      args:
+        - --model=/mnt/models
+        - --dtype=float16
+        - --max-model-len=4096
+        - --served-model-name=granite-3b

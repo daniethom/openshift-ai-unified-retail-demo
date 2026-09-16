@@ -9,6 +9,7 @@ import numpy as np
 from datetime import datetime
 import json
 
+from config.settings import settings
 from .embeddings import EmbeddingGenerator, DocumentProcessor
 from .knowledge_base import MilvusKnowledgeBase, DocumentStore
 
@@ -22,9 +23,9 @@ class RAGRetriever:
     
     def __init__(
         self,
-        embedding_model: str = "all-MiniLM-L6-v2",
-        milvus_host: str = "localhost",
-        milvus_port: int = 19530,
+        embedding_model: str | None = None,
+        milvus_host: str | None = None,
+        milvus_port: int | None = None,
         collection_name: str = "meridian_knowledge",
         storage_path: str = "./data/knowledge_base"
     ):
@@ -38,6 +39,10 @@ class RAGRetriever:
             collection_name: Name of the Milvus collection
             storage_path: Path for local document storage
         """
+        embedding_model = embedding_model or settings.embedding_model
+        milvus_host = milvus_host or settings.milvus_host
+        milvus_port = milvus_port or settings.milvus_port
+
         # Initialize components
         self.embedding_generator = EmbeddingGenerator(embedding_model)
         self.document_processor = DocumentProcessor(self.embedding_generator)

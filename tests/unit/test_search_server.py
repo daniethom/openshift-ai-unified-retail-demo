@@ -35,7 +35,7 @@ def mock_tavily_search(monkeypatch):
         return mock_results
 
     # Replace the function in the server module with our mock version
-    monkeypatch.setattr("mcp_servers.search_server._simulate_tavily_search", mock_search)
+    monkeypatch.setattr("mcp_servers.search_server.tavily_search", mock_search)
 
 @pytest.fixture
 def client():

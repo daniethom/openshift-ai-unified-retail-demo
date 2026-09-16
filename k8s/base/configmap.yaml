@@ -5,12 +5,34 @@ metadata:
   name: mcp-servers-config
   namespace: retail-ai-demo
 data:
-  # --- Default values, intended to be patched by overlays ---
-  
-  # RAG Settings
-  MILVUS_HOST: "milvus-service.retail-ai-demo.svc.cluster.local"
+  # MCP service URLs (in-cluster DNS)
+  LLM_MCP_URL: "http://llm-server:8001"
+  RAG_MCP_URL: "http://rag-server:8002"
+  SEARCH_MCP_URL: "http://search-server:8003"
+  ANALYTICS_MCP_URL: "http://analytics-server:8004"
+
+  # LLM backend (OpenShift AI / kServe OpenAI-compatible endpoint)
+  LLM_API_BASE: "http://placeholder-llm-service:8080"
+  LLM_MODEL_NAME: "granite-3b"
+  MODEL_HF_REPO: "ibm-granite/granite-3.0-2b-instruct"
+  MODEL_LOCAL_DIR: "granite-3b"
+
+  # RAG / Milvus
+  MILVUS_HOST: "milvus-service"
   MILVUS_PORT: "19530"
+  MILVUS_URI: "http://milvus-service:19530"
+  MILVUS_COLLECTION_NAME: "meridian_knowledge"
   EMBEDDING_MODEL: "all-MiniLM-L6-v2"
-  
-  # LLM Settings (placeholder to be patched)
-  GRANITE_ENDPOINT: "http://placeholder-llm-service:8080"
+  TAVILY_MAX_RESULTS: "5"
+  RAG_USE_FALLBACK: "false"
+
+  # MCP server ports (for local overrides)
+  LLM_MCP_PORT: "8001"
+  RAG_MCP_PORT: "8002"
+  SEARCH_MCP_PORT: "8003"
+  ANALYTICS_MCP_PORT: "8004"
+
+  # Platform
+  OPENSHIFT_NAMESPACE: "retail-ai-demo"
+  LOG_LEVEL: "INFO"
+  MERIDIAN_DEBUG: "false"

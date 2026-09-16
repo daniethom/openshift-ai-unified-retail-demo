@@ -24,3 +24,5 @@ spec:
         envFrom:
         - configMapRef:
             name: mcp-servers-config
+        - secretRef:
+            name: mcp-servers-secrets

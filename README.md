@@ -1,223 +1,196 @@
-# Meridian Retail Group - AI Multi-Agent System # 
-## 🎯 Overview ##
-This project is a comprehensive demonstration of a unified AI platform built for the fictional Meridian Retail Group. It showcases advanced AI-powered retail operations by combining:
+# Meridian Retail Group — AI Multi-Agent System
 
-**- Multi-Agent Collaboration using CrewAI for specialized retail tasks.**
+A demonstration of unified AI for retail operations on **Red Hat OpenShift AI**. The fictional **Meridian Retail Group** uses a crew of specialized agents, MCP microservices, RAG with Milvus, live web search, and Granite served via kServe/vLLM.
 
-**- MCP (Model Context Protocol) for standardized and decoupled AI tool integration.**
+## Overview
 
-**- RAG (Retrieval-Augmented Generation) with a Milvus vector database for deep knowledge retrieval.**
+This project combines:
 
-**- Real-time Search Integration via the Tavily API.**
+- **Multi-agent collaboration** (CrewAI) — Home, Trend, Inventory, Pricing, and Customer agents
+- **MCP protocol layer** (FastAPI) — standardized HTTP `/invoke` endpoints for tools
+- **RAG** — Milvus vector search over project JSON knowledge (`rag/service.py`)
+- **Real-time search** — Tavily API via the Search MCP server
+- **Enterprise LLM hosting** — kServe + vLLM (Granite) on OpenShift AI with GPU
 
-**- Enterprise-Grade LLM Hosting on OpenShift AI with kServe and vLLM.**
+## Demo company
 
-## 🏢 Demo Company: Meridian Retail Group ##
-Meridian Retail Group is a fictional South African retail conglomerate with four distinct brands:
+Meridian Retail Group is a fictional South African retail conglomerate:
 
-- **Meridian Fashion:** Contemporary fashion for professionals.
+| Brand | Focus |
+|-------|--------|
+| Meridian Fashion | Contemporary professional fashion |
+| Stratus | Youth streetwear and trends |
+| Casa Living | Premium homeware |
+| Vertex Sports | Athletic and outdoor gear |
 
-- **Stratus:** Youth-oriented streetwear and trends.
+## Quick start (local development)
 
-- **Casa Living:** Premium homeware and decor.
+### Prerequisites
 
-- **Vertex Sports:** Athletic and outdoor gear.
+- Python 3.11+
+- [uv](https://github.com/astral-sh/uv) or pip
+- Tavily API key ([tavily.com](https://tavily.com))
+- Optional: Milvus for real RAG (`docker run … milvus run standalone`)
+- Optional: OpenShift CLI (`oc`) for cluster deployment
 
-## 🚀 Quick Start ##
-**Prerequisites**
-- Python 3.11+ (or 3.13.5 with pyenv)
+### Setup
 
-- uv package manager (recommended) or pip
-
-- Podman and Podman Compose (for local MCP server testing)
-
-- OpenShift 4.18+ with GPU support (for full deployment)
-
-- Tavily API key
-
-**Local Development Setup**
-Clone the Repository
 ```bash
-git clone [https://github.com/YOUR_USERNAME/openshift-ai-unified-demo.git](https://github.com/YOUR_USERNAME/openshift-ai-unified-demo.git)
+git clone https://github.com/daniethom/openshift-ai-unified-demo.git
 cd openshift-ai-unified-demo
 
-Set Up Environment
-
-# Create and activate a virtual environment
-python -m venv .venv
-source .venv/bin/activate
-
-Install Dependencies
-
-# Using uv (recommended)
-uv pip install -e ".[dev]"
-
-# Or using pip
-pip install -e ".[dev]"
-
-Configure Environment Variables
-
+make install
 cp .env.example .env
-# Edit the .env file with your TAVILY_API_KEY and other settings
-
-Run the Application
-
-# This will launch the Streamlit UI
-streamlit run streamlit_app/app.py
+# Edit .env — set TAVILY_API_KEY at minimum
 ```
 
-## 🏗️ Architecture ##
+### Run MCP servers (separate terminals)
+
+```bash
+uvicorn mcp_servers.llm_server:app --port 8001
+uvicorn mcp_servers.rag_server:app --port 8002
+uvicorn mcp_servers.search_server:app --port 8003
+uvicorn mcp_servers.analytics_server:app --port 8004
+```
+
+### Run the UI
+
+```bash
+make run-ui
+# or: streamlit run streamlit_app/app.py
+```
+
+Set `RAG_USE_FALLBACK=true` in `.env` if Milvus is not running locally.
+
+## Architecture
+
 ```mermaid
 graph TB
-    subgraph "Web Interface"
-        UI[Streamlit Dashboard]
-    end
-    
-    subgraph "Multi-Agent Layer (CrewAI)"
-        HOME[Home Agent - Orchestrator]
-        TREND[Trend Agent]
-        INV[Inventory Agent]
-        CUST[Customer Agent]
-        PRICE[Pricing Agent]
-    end
-    
-    subgraph "MCP Protocol Layer"
-        MCP_LLM[LLM MCP Server]
-        MCP_RAG[RAG MCP Server]
-        MCP_SEARCH[Search MCP Server]
-        MCP_ANALYTICS[Analytics MCP Server]
-    end
-    
-    subgraph "Backend Services & Data"
-        LLM[Granite 3B / Llama 3.2]
-        MILVUS[Milvus Vector DB]
-        TAVILY[Tavily Search API]
-        DATA[JSON Data Files]
-    end
-    
-    subgraph "Platform (OpenShift AI)"
-        KSERVE[kServe & vLLM]
-        GPU[NVIDIA GPU Resources]
-    end
-    
-    UI --> HOME
-    HOME --> TREND & INV & CUST & PRICE
-    TREND & INV & CUST & PRICE --> MCP_LLM & MCP_RAG & MCP_SEARCH & MCP_ANALYTICS
-    MCP_LLM --> LLM
-    MCP_RAG --> MILVUS
-    MCP_SEARCH --> TAVILY
-    MCP_ANALYTICS --> DATA
-    LLM --> KSERVE
-    KSERVE --> GPU
+    User --> Streamlit[Streamlit UI]
+    Streamlit --> HomeAgent[Home Agent]
+    HomeAgent --> Agents[Specialist Agents]
+    Agents --> MCPClient[MCP HTTP Client]
+    MCPClient --> LLM_MCP[LLM MCP Server]
+    MCPClient --> RAG_MCP[RAG MCP Server]
+    MCPClient --> SEARCH_MCP[Search MCP Server]
+    MCPClient --> ANALYTICS_MCP[Analytics MCP Server]
+    LLM_MCP --> KServe[kServe / vLLM Granite]
+    RAG_MCP --> Milvus[Milvus]
+    SEARCH_MCP --> Tavily[Tavily API]
+    ANALYTICS_MCP --> JSON[JSON Data Files]
 ```
 
-## 📁 Repository Structure ##
+Configuration is centralized in `config/settings.py`. Agents call MCP servers through `agents/mcp_client.py` using URLs from environment variables (never hardcoded `localhost` in cluster code).
+
+See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for details.
+
+## Repository structure
+
 ```
-meridian-retail-ai/
-├── README.md
-├── pyproject.toml
-├── .env.example
-│
-├── agents/                 # Agent implementations (home, inventory, etc.)
-├── data/                   # Synthetic JSON data (products, customers, etc.)
-├── docs/                   # Documentation (architecture, guides)
-│
-├── k8s/                    # Kubernetes manifests (Kustomize)
-│   ├── base/               # Base configs (namespace, deployments, services)
+├── agents/              # CrewAI agents + mcp_client.py
+├── config/              # Central settings (config/settings.py)
+├── data/                # Synthetic JSON (products, trends, customers)
+├── docs/                # Architecture, deployment, demo guides
+├── k8s/
+│   ├── base/            # Namespace, ConfigMaps, Deployments, Milvus, Routes
 │   └── overlays/
-│       ├── local/          # Patches for OpenShift Local (CRC)
-│       └── production/     # Patches for full OpenShift AI cluster
-│
-├── mcp_servers/            # FastAPI MCP servers (llm, rag, search, analytics)
-├── scripts/                # Automation scripts (deploy, setup, etc.)
-├── streamlit_app/          # Streamlit web interface code
-└── tests/                  # Pytest suites (unit, integration)
+│       ├── local/       # CRC / resource-constrained clusters
+│       └── production/  # kServe, BuildConfig, model PVC, Granite route
+├── mcp_servers/         # FastAPI MCP microservices
+├── rag/                 # Milvus RAG service (rag/service.py)
+├── scripts/             # Deploy, build, validate, demo checklist
+├── streamlit_app/       # Web UI
+└── tests/               # Pytest (unit + integration)
 ```
 
-## 🎯 Demo Scenarios ##
-**1. Fashion Trend Analysis (Multi-Agent + RAG)**
+## Deployment on OpenShift
 
-- **Query:** "What winter fashion trends should our Cape Town stores focus on for professional women?"
-- **Agents:** Trend, Customer, Inventory, Pricing
-- **Result:** A comprehensive report with actionable inventory and pricing recommendations.
+Full instructions: **[docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)**
 
-**2. Cross-Sell Opportunity (MCP Integration)**
-- *Query:** "Customer Sarah Johnson just bought a winter coat. What should we recommend next?"
-- **Tools:** RAG (purchase history), Search (matching accessories), Analytics (personalization).
-- **Result:** Personalized product recommendations with a high probability of conversion.
+### One-command production deploy
 
-**3. Dynamic Inventory Optimization (Agent Orchestration)**
-- **Query:** "Optimize inventory for the upcoming summer season across all Johannesburg stores."
-- **Process:** Trend forecasting, historical sales analysis, and dynamic price optimization.
-- **Result:** A detailed inventory plan with quantities, timing, and pricing strategies.
-
-**4. Customer Complaint Resolution (Advanced Orchestration)**
-- **Query:** "A high-value customer is complaining about a delayed delivery."
-- **Strategy:** The Home Agent coordinates the Customer, Inventory, and Pricing agents to analyze the issue, find a solution, and calculate appropriate compensation to retain the customer.
-- **Result:** An immediate resolution with a retention strategy.
-
-## 🌍 Deployment
-Local Development (CRC)
-For testing on a constrained hardware environment like a laptop running OpenShift Local.
-
-### Deploys with resource-friendly settings
 ```bash
-./scripts/deploy-local.sh
+# Create secrets first (see docs/DEPLOYMENT.md)
+make deploy-prod-full
 ```
 
-Production OpenShift
-For the full demo on an OpenShift AI cluster with GPU resources.
+This builds the image, applies manifests, primes Milvus, downloads the Granite model, and validates the deployment.
 
-#### Deploys with production-ready settings (replicas, resources, real endpoints)
+### Common commands
+
+| Command | Description |
+|---------|-------------|
+| `make deploy-local-full` | Build + deploy + validate on CRC/local OpenShift |
+| `make deploy-prod-full` | Full production pipeline |
+| `make build-images` | Build and push image to internal registry |
+| `make download-model-cluster` | Download Granite weights to cluster PVC |
+| `make validate` | Pre-demo health checks |
+| `make demo-checklist` | Routes, pod status, sample queries |
+| `make demo-checklist-strict` | Checklist + validation (exit 1 if not ready) |
+
+### Demo day
+
+Before presenting:
+
 ```bash
-./scripts/deploy-openshift.sh
+make demo-checklist-strict
 ```
 
-🔧 Configuration
-Key configuration is managed through environment variables, loaded from the .env file for local development and from ConfigMaps/Secrets in OpenShift.
+Presenter script and scenarios: [docs/DEMO_GUIDE.md](docs/DEMO_GUIDE.md)
 
-## API Keys
+## Configuration
+
+All settings load from environment variables via `config/settings.py`. Copy `.env.example` to `.env` for local use; on OpenShift use ConfigMaps and Secrets (see `k8s/base/configmap.yaml` and `k8s/base/secret.yaml`).
+
+### Key variables
+
+| Variable | Purpose |
+|----------|---------|
+| `LLM_MCP_URL`, `RAG_MCP_URL`, … | Full HTTP URLs to MCP services |
+| `LLM_API_BASE` | OpenAI-compatible kServe endpoint (`/v1`) |
+| `LLM_MODEL_NAME` | Model name on kServe (e.g. `granite-3b`) |
+| `TAVILY_API_KEY` | Tavily search (Secret on cluster) |
+| `MILVUS_URI` | Milvus connection string |
+| `MILVUS_COLLECTION_NAME` | Vector collection (default: `meridian_knowledge`) |
+| `RAG_USE_FALLBACK` | Use static docs when Milvus unavailable |
+| `MODEL_HF_REPO` | Hugging Face repo for Granite download |
+| `OPENSHIFT_NAMESPACE` | Target namespace (default: `retail-ai-demo`) |
+
+Legacy `GRANITE_ENDPOINT` is still supported as an alias for `LLM_API_BASE`.
+
+## Demo scenarios
+
+1. **Fashion trends** — *"What winter fashion trends should our Cape Town stores focus on for professional women?"*
+2. **Cross-sell** — *"Customer Sarah Johnson bought a winter coat. What should we recommend?"*
+3. **Inventory** — *"Optimize inventory for the upcoming summer season across all Johannesburg stores."*
+4. **Complaint resolution** — *"A high-value customer is complaining about a delayed delivery and poor service."*
+
+## Testing
+
 ```bash
-TAVILY_API_KEY=your_key_here
-```
-
-## OpenShift Settings
-```bash
-OPENSHIFT_NAMESPACE=retail-ai-demo
-GRANITE_ENDPOINT=http://granite-service:8080 # Patched by Kustomize
-```
-
-## MCP Server Ports
-```bash
-LLM_MCP_PORT=8001
-RAG_MCP_PORT=8002
-SEARCH_MCP_PORT=8003
-ANALYTICS_MCP_PORT=8004
-```
-
-## RAG Settings
-```bash
-MILVUS_HOST=milvus-service
-MILVUS_PORT=19530
-```
-
-# 🧪 Testing
-The project includes a comprehensive test suite using Pytest.
-
-## Run all tests
-``` bash
-make test
-```
-## Run only unit tests
-```bash
-pytest tests/unit
-```
-## Run only integration tests
-```bash
+make test              # Full suite (RAG_USE_FALLBACK=true)
+make lint              # Ruff + Black
+pytest tests/unit      # Unit tests only
 pytest tests/integration
 ```
-# 🤝 Contributing
-We welcome contributions! Please see our CONTRIBUTING.md for details on our development workflow and code standards.
 
-# 📄 License
-This project is licensed under the MIT License. See the LICENSE file for details.
+CI runs on push/PR via GitHub Actions (`.github/workflows/ci.yml`): lint, test, and Docker build.
+
+## Documentation
+
+| Document | Description |
+|----------|-------------|
+| [CHANGELOG.md](CHANGELOG.md) | Version history and refactor release notes |
+| [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) | OpenShift deploy, secrets, kServe, Milvus, CI/CD |
+| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | System design and data flow |
+| [docs/MCP_INTEGRATION.md](docs/MCP_INTEGRATION.md) | MCP API contracts and server tools |
+| [docs/MULTI_AGENT_DESIGN.md](docs/MULTI_AGENT_DESIGN.md) | Agent orchestration patterns |
+| [docs/DEMO_GUIDE.md](docs/DEMO_GUIDE.md) | Live demo script and checklist |
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md).
+
+## License
+
+MIT — see [LICENSE.md](LICENSE.md).

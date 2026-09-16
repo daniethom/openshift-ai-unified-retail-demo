@@ -2,16 +2,36 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: milvus-primer-job
-  namespace: meridian-demo
+  namespace: retail-ai-demo
 spec:
   template:
     spec:
+      initContainers:
+        - name: wait-for-milvus
+          image: curlimages/curl:8.7.1
+          command:
+            - sh
+            - -c
+            - |
+              until curl -sf "http://milvus-service:9091/healthz"; do
+                echo "Waiting for Milvus..."
+                sleep 5
+              done
       containers:
-      - name: primer
-        image: image-registry.openshift-image-registry.svc:5000/meridian-demo/meridian-retail-ai:latest
-        command: ["python", "scripts/prime_database.py"]
-        envFrom:
-        - secretRef:
-            name: meridian-secrets
+        - name: primer
+          image: image-registry.openshift-image-registry.svc:5000/retail-ai-demo/meridian-retail-ai:latest
+          command: ["python", "scripts/prime_database.py", "--recreate"]
+          envFrom:
+            - configMapRef:
+                name: mcp-servers-config
+            - secretRef:
+                name: mcp-servers-secrets
+          resources:
+            requests:
+              cpu: 500m
+              memory: 2Gi
+            limits:
+              cpu: "2"
+              memory: 4Gi
       restartPolicy: Never
-  backoffLimit: 4
+  backoffLimit: 3

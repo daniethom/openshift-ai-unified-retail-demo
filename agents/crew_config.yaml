@@ -343,6 +343,8 @@ workflows:
         aggregate: true
 
 # Integration Settings
+# NOTE: Runtime MCP URLs are loaded from config/settings.py and OpenShift ConfigMaps.
+# The endpoints below are reference/documentation only — not used by the application at runtime.
 integrations:
   # MCP Server Configurations
   mcp_servers:

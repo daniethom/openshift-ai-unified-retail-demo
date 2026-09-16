@@ -10,6 +10,7 @@ from datetime import datetime, timedelta
 from typing import Dict, Any, List, Optional, Tuple
 
 from agents.base_agent import BaseAgent, AgentCapability
+from agents import mcp_client
 import numpy as np
 
 logger = logging.getLogger(__name__)
@@ -417,13 +418,9 @@ class InventoryAgent(BaseAgent):
     
     async def _get_product_info(self, product_id: str) -> Dict[str, Any]:
         """Get product information"""
-        # Query MCP Analytics server for product details
-        if self.mcp_servers.get("analytics_server"):
-            return await self.mcp_servers["analytics_server"].get_product_details(
-                product_id
-            )
-        
-        # Fallback to mock data
+        product_details = await mcp_client.get_product_details(product_id)
+        if product_details:
+            return product_details
         return {
             "product_id": product_id,
             "name": "Product Name",

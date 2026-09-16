@@ -112,8 +112,9 @@ do
             echo "oc create secret generic mcp-servers-secrets --from-literal=TAVILY_API_KEY='your_key_here' -n ${NAMESPACE}"
             
             info "Next steps for OpenShift deployment:"
-            echo "1. Build and push your container images."
-            echo "2. Run 'make deploy-local' or 'make deploy-prod' to deploy the application."
+            echo "1. Create secrets: oc create secret generic mcp-servers-secrets --from-literal=TAVILY_API_KEY='your_key' -n ${NAMESPACE}"
+            echo "2. Run 'make deploy-prod-full' for build, deploy, model download, and validation."
+            echo "3. Or run 'make deploy-local-full' for CRC/local clusters."
             break
             ;;
         "Quit")

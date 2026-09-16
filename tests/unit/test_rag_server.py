@@ -28,7 +28,7 @@ def mock_rag_retrieval(monkeypatch):
         return mock_documents
 
     # Replace the function in the server module with our mock version
-    monkeypatch.setattr("mcp_servers.rag_server._simulate_rag_retrieval", mock_retrieval)
+    monkeypatch.setattr("mcp_servers.rag_server.retrieve_documents", mock_retrieval)
 
 @pytest.fixture
 def client():

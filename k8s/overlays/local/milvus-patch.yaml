@@ -1,0 +1,18 @@
+# k8s/overlays/local/milvus-patch.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: milvus-standalone
+  namespace: retail-ai-demo
+spec:
+  template:
+    spec:
+      containers:
+        - name: milvus
+          resources:
+            requests:
+              cpu: 250m
+              memory: 1Gi
+            limits:
+              cpu: "1"
+              memory: 2Gi

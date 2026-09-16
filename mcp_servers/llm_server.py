@@ -3,6 +3,8 @@ from fastapi import FastAPI, HTTPException
 from openai import OpenAI
 from pydantic import BaseModel
 
+from config.settings import settings
+
 # --- Pydantic Models for Request/Response ---
 class InvokeRequest(BaseModel):
     prompt: str
@@ -17,10 +19,10 @@ app = FastAPI()
 # The client automatically reads the LLM_API_KEY and LLM_API_BASE from environment variables
 try:
     client = OpenAI(
-        api_key=os.environ.get("LLM_API_KEY"),
-        base_url=os.environ.get("LLM_API_BASE"),
+        api_key=settings.llm_api_key,
+        base_url=settings.llm_api_base,
     )
-    LLM_MODEL = os.environ.get("LLM_MODEL_NAME", "gpt-4o-mini")
+    LLM_MODEL = settings.llm_model_name
 except Exception as e:
     print(f"Error initializing OpenAI client: {e}")
     client = None

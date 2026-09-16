@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: analytics-server
+  namespace: retail-ai-demo
+  labels:
+    app: analytics-server
+spec:
+  selector:
+    app: analytics-server
+  ports:
+  - name: http
+    protocol: TCP
+    port: 8004
+    targetPort: 8004

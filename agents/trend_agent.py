@@ -12,6 +12,8 @@ from typing import Dict, Any, List, Optional
 from agents.base_agent import BaseAgent, AgentCapability
 from agents.tools.fashion_tools import FashionAnalyzer
 from agents.tools.search_tools import TrendSearcher
+from agents.tools.rag_tools import MCPRagRetriever
+from config.settings import settings
 
 logger = logging.getLogger(__name__)
 
@@ -22,7 +24,12 @@ class TrendAgent(BaseAgent):
     Combines RAG capabilities with real-time search for comprehensive insights
     """
     
-    def __init__(self, mcp_servers: Dict[str, Any], rag_retriever: Any):
+    def __init__(
+        self,
+        mcp_servers: Optional[Dict[str, Any]] = None,
+        rag_retriever: Any = None,
+        data_store: Any = None,
+    ):
         # Define agent capabilities
         capabilities = [
             AgentCapability(
@@ -78,14 +85,15 @@ class TrendAgent(BaseAgent):
             preferences, considering climate, culture, and economic factors. You excel 
             at predicting upcoming trends and translating them into actionable 
             recommendations for Meridian Retail Group brands.""",
-            mcp_servers=mcp_servers,
+            mcp_servers=mcp_servers or settings.mcp_servers_config(),
             capabilities=capabilities
         )
         
         # Initialize tools
         self.fashion_analyzer = FashionAnalyzer()
-        self.trend_searcher = TrendSearcher(mcp_servers.get("search_server"))
-        self.rag_retriever = rag_retriever
+        self.trend_searcher = TrendSearcher()
+        self.rag_retriever = rag_retriever or MCPRagRetriever()
+        self.data_store = data_store
         
         # South African specific context
         self.sa_context = {
@@ -515,16 +523,17 @@ class TrendAgent(BaseAgent):
     
     async def _check_tool_availability(self) -> Dict[str, bool]:
         """Check which MCP tools are available"""
+        from agents import mcp_client
+
         availability = {}
-        
-        for server_name, server in self.mcp_servers.items():
+        for server_name, endpoint in settings.mcp_servers_config().items():
+            url = endpoint["endpoint"]
             try:
-                # Ping the server to check if it's available
-                availability[server_name] = True
+                availability[server_name] = await mcp_client.check_mcp_health(url)
             except Exception as e:
                 logger.warning(f"MCP server {server_name} not available: {e}")
                 availability[server_name] = False
-        
+
         return availability
     
     def _calculate_trend_score(self, trend_data: Dict[str, Any]) -> float:

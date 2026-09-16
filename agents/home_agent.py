@@ -10,34 +10,7 @@ from datetime import datetime, timedelta
 from typing import Dict, Any, List, Optional, Tuple, Set
 from enum import Enum
 
-# Assuming 'base_agent' is a local module with BaseAgent defined
-# from agents.base_agent import BaseAgent, AgentCapability, AgentMessage
-
-# Placeholder for BaseAgent if the module is not available, to make the script self-contained for review
-class BaseAgent:
-    def __init__(self, name, role, goal, backstory, mcp_servers, capabilities):
-        self.name = name
-        self.role = role
-        self.goal = goal
-        self.backstory = backstory
-        self.mcp_servers = mcp_servers
-        self.capabilities = capabilities
-        self.status = "idle"
-        self.agent_registry = {}
-        
-    def register_agent(self, agent):
-        self.agent_registry[agent.name] = agent
-
-    def update_metrics(self, response_time, success):
-        pass # Placeholder
-        
-    def get_status_dict(self):
-        return {"status": self.status}
-
-
-class AgentCapability:
-    def __init__(self, name, description, input_schema, output_schema):
-        pass # Placeholder
+from agents.base_agent import BaseAgent, AgentCapability, AgentMessage
 
 logger = logging.getLogger(__name__)
 

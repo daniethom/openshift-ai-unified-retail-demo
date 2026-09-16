@@ -1,78 +1,86 @@
 # Multi-Agent System Design
 
-## 1. Orchestration Strategy
-The heart of the Meridian Retail AI system is its multi-agent design, orchestrated by the HomeAgent. This agent acts as a central "manager" or "brain" for the entire crew. It does not perform specialized tasks itself; instead, its sole purpose is to receive user queries, analyze them, and delegate the work to the appropriate specialist agents.
+## 1. Orchestration strategy
 
-This orchestration is dynamic. The HomeAgent uses its internal logic to classify the complexity and intent of each query and then chooses the most efficient collaboration pattern to generate a comprehensive response.
+The **HomeAgent** (`agents/home_agent.py`) is the central orchestrator. It receives user queries, classifies complexity and intent, delegates to specialist agents, and synthesizes responses.
 
-## 2. Collaboration Patterns
-The HomeAgent employs several collaboration patterns depending on the query:
+Specialist agents extend **`agents/base_agent.py`** (CrewAI) and invoke tools through **`agents/mcp_client.py`** — not direct backend SDK calls.
 
-    ### Simple Query (Direct Routing)
-    **Trigger:** A query with a clear, unambiguous intent that maps to a single agent's capability.
+## 2. Collaboration patterns
 
-    **Example:** "What is the stock level for product XYZ?"
+### Simple query (direct routing)
 
-    **Execution:** 
-    - The HomeAgent identifies this as an inventory question and routes it directly to the InventoryAgent. 
-    - The response is passed back to the user with minimal synthesis.
+**Trigger:** Single-domain question.
 
-    ### Parallel Execution
-    **Trigger:** A query that requires input from multiple, independent domains simultaneously.
+**Example:** "What is the stock level for product MF001?"
 
-    **Example:** "What is the price and stock level for our winter coats?"
+**Execution:** HomeAgent routes to InventoryAgent → analytics/RAG as needed → response to user.
 
-    **Execution:** 
-    - The HomeAgent recognizes the need for both the PricingAgent and the InventoryAgent. 
-    - It tasks both agents concurrently using asyncio.gather. 
-    - This is highly efficient as the agents work in parallel. 
-    - The HomeAgent then waits for both responses and synthesizes them into a single answer.
+### Parallel execution
 
-    ### Hierarchical Delegation
-    **Trigger:** A complex, multi-step query where the output of one agent is required as the input for another.
+**Trigger:** Multiple independent domains.
 
-    **Example:** "Plan our marketing campaign for the top winter fashion trend."
+**Example:** "What is the price and stock level for our winter coats?"
 
-    **Execution:**
+**Execution:** HomeAgent tasks PricingAgent and InventoryAgent concurrently (`asyncio.gather`), then synthesizes.
 
-    - The HomeAgent first tasks the TrendAgent with identifying the top winter trend.
-    - Once the TrendAgent responds (e.g., "The top trend is 'Luxe Knitwear'"), the HomeAgent uses this information to create a new, more specific task.
-    - It then tasks the CustomerAgent or a marketing specialist agent to "Create a marketing campaign for 'Luxe Knitwear' targeting our Gold-tier members."
+### Hierarchical delegation
 
-## 3. Agent Roster
-The system is composed of a crew of five specialized agents:
+**Trigger:** Multi-step queries where one agent's output feeds the next.
 
-    *Home Agent*
-    **Role:** Chief AI Orchestrator
+**Example:** "Plan our marketing campaign for the top winter fashion trend."
 
-    **Goal:** Coordinate all AI agents to deliver comprehensive, accurate, and actionable insights for retail operations.
+**Execution:** TrendAgent identifies trends → HomeAgent tasks CustomerAgent with campaign planning using that context.
 
-    **Capabilities:** Query analysis, multi-agent orchestration, response synthesis, system monitoring.
+## 3. Agent roster
 
-    *Inventory Agent*
-    **Role:** Inventory Management Specialist
+| Agent | Role | Key MCP tools |
+|-------|------|----------------|
+| **HomeAgent** | Chief orchestrator | Coordinates all agents |
+| **InventoryAgent** | Stock and supply chain | Analytics (`get_product_details`) |
+| **PricingAgent** | Revenue optimization | Search, Analytics (`get_demand_analytics`) |
+| **CustomerAgent** | Service and loyalty | RAG, Analytics |
+| **TrendAgent** | Fashion intelligence | Search (`web_search`), RAG (`retrieve_documents`) |
 
-    **Goal:** Optimize inventory levels to maximize availability while minimizing costs.
+### Tool wrappers
 
-    **Capabilities:** Checking stock levels, forecasting demand, optimizing inventory, and generating reorder recommendations.
+- **`agents/tools/search_tools.py`** — `TrendSearcher` → `mcp_client.web_search`
+- **`agents/tools/rag_tools.py`** — `MCPRagRetriever` → `mcp_client.retrieve_documents`
 
-    *Pricing Agent*
-    **Role:** Revenue Optimization Specialist
+## 4. MCP client layer
 
-    **Goal:** Maximize revenue and profitability through intelligent pricing strategies.
+All HTTP communication with MCP servers flows through **`agents/mcp_client.py`**:
 
-    **Capabilities:** Optimizing product pricing, analyzing competitor prices, and planning promotional campaigns.
+| Function | MCP server | Tool / endpoint |
+|----------|------------|-----------------|
+| `invoke_llm(prompt)` | LLM | `POST /invoke` with `prompt` |
+| `web_search(query)` | Search | `web_search` |
+| `retrieve_documents(query, top_k)` | RAG | `retrieve_documents` |
+| `get_product_details(id)` | Analytics | `get_product_details` |
+| `get_demand_analytics(id)` | Analytics | `get_demand_analytics` |
+| `check_mcp_health(url)` | Any | `GET /healthz` |
 
-    *Customer Agent*
-    **Role:** Customer Experience Specialist
+Configuration URLs come from **`config/settings.py`** (`settings.mcp_servers_config()` for status display).
 
-    **Goal:** Deliver exceptional customer service and build lasting relationships through personalized interactions.
+## 5. Streamlit integration
 
-    **Capabilities:** Handling customer queries, providing personalized recommendations, resolving complaints, and analyzing customer loyalty.
+`streamlit_app/app.py`:
 
-    *Trend Agent*
-    **Role:** Fashion Trend Analyst
+1. Loads settings from environment
+2. Initializes specialist agents with MCP endpoint map
+3. Creates HomeAgent with agent registry
+4. Routes user chat through `HomeAgent.process_query()`
 
-    **Goal:** Identify and analyze fashion trends to guide inventory and marketing decisions.
+On OpenShift, Streamlit receives MCP URLs from ConfigMaps (`streamlit-ui-config`, `mcp-servers-config`).
 
-    **Capabilities:** Analyzing seasonal trends, forecasting trend adoption, and monitoring competitor trend strategies.
+## 6. Configuration
+
+Agent behavior is influenced by environment variables (see `.env.example` and `config/settings.py`). No hardcoded `localhost` URLs in production code paths.
+
+Legacy `agents/crew_config.yaml` may contain example endpoints; **`config/settings.py` is the source of truth** for runtime wiring.
+
+## 7. Related documentation
+
+- [MCP_INTEGRATION.md](MCP_INTEGRATION.md)
+- [ARCHITECTURE.md](ARCHITECTURE.md)
+- [DEMO_GUIDE.md](DEMO_GUIDE.md)

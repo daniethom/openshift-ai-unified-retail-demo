@@ -1,4 +1,3 @@
-# k8s/base/llm-server-deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -18,10 +17,12 @@ spec:
     spec:
       containers:
       - name: llm-server
-        # Replace with your actual image repository and tag
-        image: image-registry.openshift-image-registry.svc:5000/retail-ai-demo/llm-server:latest
+        image: image-registry.openshift-image-registry.svc:5000/retail-ai-demo/meridian-retail-ai:latest
+        command: ["uvicorn", "mcp_servers.llm_server:app", "--host", "0.0.0.0", "--port", "8001"]
         ports:
         - containerPort: 8001
         envFrom:
         - configMapRef:
             name: mcp-servers-config
+        - secretRef:
+            name: mcp-servers-secrets

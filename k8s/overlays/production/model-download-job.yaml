@@ -1,0 +1,40 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: granite-model-download
+  namespace: retail-ai-demo
+spec:
+  backoffLimit: 2
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: downloader
+          image: image-registry.openshift-image-registry.svc:5000/retail-ai-demo/meridian-retail-ai:latest
+          command:
+            - python
+            - scripts/download_model.py
+            - --output
+            - /mnt/models/granite-3b
+          envFrom:
+            - configMapRef:
+                name: mcp-servers-config
+            - secretRef:
+                name: mcp-servers-secrets
+          env:
+            - name: MODEL_LOCAL_DIR
+              value: /mnt/models/granite-3b
+          volumeMounts:
+            - name: model-storage
+              mountPath: /mnt/models
+          resources:
+            requests:
+              cpu: "1"
+              memory: 4Gi
+            limits:
+              cpu: "4"
+              memory: 8Gi
+      volumes:
+        - name: model-storage
+          persistentVolumeClaim:
+            claimName: granite-model-storage

@@ -1,0 +1,16 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: granite-vllm
+  namespace: retail-ai-demo
+  labels:
+    app: granite-vllm
+spec:
+  to:
+    kind: Service
+    name: granite-vllm-predictor
+  port:
+    targetPort: 8080
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect

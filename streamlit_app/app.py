@@ -14,10 +14,11 @@ if project_root not in sys.path:
 import streamlit as st
 import asyncio
 import json
-import os
 from datetime import datetime
 from typing import Dict, Any, List, Optional
 import logging
+
+from config.settings import settings
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -120,27 +121,22 @@ class AgentSystemInterface:
             from agents.customer_agent import CustomerAgent
             from agents.trend_agent import TrendAgent
             
-            # Mock MCP servers for demo
-            mock_mcp_servers = {
-                "llm_server": {"endpoint": "http://localhost:8001"},
-                "rag_server": {"endpoint": "http://localhost:8002"},
-                "search_server": {"endpoint": "http://localhost:8003"},
-                "analytics_server": {"endpoint": "http://localhost:8004"}
-            }
+            # MCP endpoints loaded from environment / ConfigMap
+            mcp_servers = settings.mcp_servers_config()
             
             # Mock data store
             mock_data_store = {}
             
             # Initialize agents
             self.agents = {
-                "InventoryAgent": InventoryAgent(mock_mcp_servers, mock_data_store),
-                "PricingAgent": PricingAgent(mock_mcp_servers, mock_data_store),
-                "CustomerAgent": CustomerAgent(mock_mcp_servers, mock_data_store),
-                "TrendAgent": TrendAgent(mock_mcp_servers, mock_data_store)
+                "InventoryAgent": InventoryAgent(mcp_servers, mock_data_store),
+                "PricingAgent": PricingAgent(mcp_servers, mock_data_store),
+                "CustomerAgent": CustomerAgent(mcp_servers, mock_data_store),
+                "TrendAgent": TrendAgent(mcp_servers=mcp_servers, data_store=mock_data_store)
             }
             
             # Initialize home agent with agent registry
-            self.home_agent = HomeAgent(mock_mcp_servers, self.agents)
+            self.home_agent = HomeAgent(mcp_servers, self.agents)
             
             logger.info("Agent system initialized successfully")
             return True

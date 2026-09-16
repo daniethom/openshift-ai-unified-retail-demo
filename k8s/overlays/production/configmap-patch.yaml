@@ -5,5 +5,7 @@ metadata:
   name: mcp-servers-config
   namespace: retail-ai-demo
 data:
-  # Patch the LLM endpoint to point to the real OpenShift Route for the kServe vLLM model
-  GRANITE_ENDPOINT: "https://granite-vllm-retail-ai-demo.apps.my-cluster.example.com"
+  # In-cluster OpenAI-compatible kServe endpoint
+  LLM_API_BASE: "http://granite-vllm-predictor.retail-ai-demo.svc.cluster.local/v1"
+  LLM_MODEL_NAME: "granite-3b"
+  MILVUS_COLLECTION_NAME: "meridian_knowledge"

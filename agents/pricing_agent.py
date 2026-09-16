@@ -12,6 +12,7 @@ import numpy as np
 from decimal import Decimal, ROUND_HALF_UP
 
 from agents.base_agent import BaseAgent, AgentCapability
+from agents import mcp_client
 
 logger = logging.getLogger(__name__)
 
@@ -414,13 +415,10 @@ class PricingAgent(BaseAgent):
     
     async def _get_market_data(self, product_id: str) -> Dict[str, Any]:
         """Get market data for competitive analysis"""
-        # Search for competitor prices using MCP search server
-        if self.mcp_servers.get("search_server"):
-            search_results = await self.mcp_servers["search_server"].search(
-                f"price comparison {product_id} South Africa retailers"
-            )
-        else:
-            search_results = {}
+        search_results = await mcp_client.web_search(
+            f"price comparison {product_id} South Africa retailers"
+        )
+        search_payload = {"prices": search_results, "results": search_results}
         
         # Mock enhanced market data
         return {
@@ -432,18 +430,12 @@ class PricingAgent(BaseAgent):
             "market_average": 2166,
             "price_range": {"min": 1799, "max": 2499},
             "our_position": "below_average",
-            "online_prices": search_results.get("prices", [])
+            "online_prices": search_payload.get("prices", [])
         }
     
     async def _get_demand_data(self, product_id: str) -> Dict[str, Any]:
         """Get demand data for price optimization"""
-        # Query analytics for demand patterns
-        if self.mcp_servers.get("analytics_server"):
-            demand_analytics = await self.mcp_servers["analytics_server"].get_demand_analytics(
-                product_id
-            )
-        else:
-            demand_analytics = {}
+        demand_analytics = await mcp_client.get_demand_analytics(product_id)
         
         # Mock demand data
         return {

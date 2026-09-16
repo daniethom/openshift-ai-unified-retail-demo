@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: milvus-standalone
+  namespace: retail-ai-demo
+  labels:
+    app: milvus
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: milvus
+  template:
+    metadata:
+      labels:
+        app: milvus
+    spec:
+      containers:
+        - name: milvus
+          image: milvusdb/milvus:v2.4.15
+          args: ["milvus", "run", "standalone"]
+          ports:
+            - containerPort: 19530
+              name: grpc
+            - containerPort: 9091
+              name: metrics
+          env:
+            - name: ETCD_USE_EMBED
+              value: "true"
+            - name: ETCD_DATA_DIR
+              value: /var/lib/milvus/etcd
+            - name: COMMON_STORAGETYPE
+              value: local
+          volumeMounts:
+            - name: milvus-data
+              mountPath: /var/lib/milvus
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 9091
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: 500m
+              memory: 2Gi
+            limits:
+              cpu: "2"
+              memory: 4Gi
+      volumes:
+        - name: milvus-data
+          persistentVolumeClaim:
+            claimName: milvus-data

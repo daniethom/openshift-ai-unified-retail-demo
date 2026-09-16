@@ -1,0 +1,13 @@
+# k8s/base/streamlit-ui-config.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: streamlit-ui-config
+  namespace: retail-ai-demo
+data:
+  LLM_MCP_URL: "http://llm-server:8001"
+  RAG_MCP_URL: "http://rag-server:8002"
+  SEARCH_MCP_URL: "http://search-server:8003"
+  ANALYTICS_MCP_URL: "http://analytics-server:8004"
+  OPENSHIFT_NAMESPACE: "retail-ai-demo"
+  LOG_LEVEL: "INFO"

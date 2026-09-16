@@ -1,144 +1,198 @@
 # MCP (Model Context Protocol) Integration
-## 1. Purpose of MCP
-The Model Context Protocol (MCP) is a critical architectural component in this project. It serves as a standardized communication layer that decouples the AI agents from their tools.
 
-Instead of an agent needing to know the specific client library and implementation details for Tavily, Milvus, or our internal analytics, it only needs to know how to make a simple, standardized API call. This provides several key advantages:
+## 1. Purpose
 
-- **Modularity:** Tools (like the search backend) can be swapped out with minimal to no changes to the agents themselves.
+MCP decouples AI agents from backend tool implementations. Agents call a consistent HTTP API; MCP servers wrap Milvus, Tavily, kServe, and internal JSON analytics.
 
-- **Simplicity:** Agents are simpler because they don't contain complex client-specific logic.
+Benefits:
 
-- **Scalability:** Each MCP server is a separate microservice that can be developed, deployed, and scaled independently.
+- **Modularity** — swap backends without rewriting agents
+- **Simplicity** — agents use `agents/mcp_client.py`, not vendor SDKs
+- **Scalability** — each MCP server is an independent Deployment on OpenShift
+- **Extensibility** — add tools by extending server `/invoke` handlers
 
-- **Extensibility:** Adding a new tool or capability to the system is as simple as creating a new MCP server and registering it with the agents.
+## 2. Agent integration
 
-## 2. Server Overview
-The project implements four distinct MCP servers, each running as a FastAPI application:
+Agents call MCP through **`agents/mcp_client.py`**:
 
-- **llm_server.py:** Provides a standardized interface for agents to access the base Large Language Model for tasks like text generation and understanding.
+```python
+from agents import mcp_client
 
-- **rag_server.py:** Connects to the Milvus vector database to retrieve relevant documents and context.
+results = await mcp_client.web_search("winter fashion Cape Town")
+docs = await mcp_client.retrieve_documents("power suiting trends", top_k=5)
+text = await mcp_client.invoke_llm("Summarize these trends...")
+analytics = await mcp_client.get_product_details("MF001")
+```
 
-- **search_server.py:** Acts as a gateway to the external Tavily API to perform real-time web searches.
+URLs are loaded from **`config/settings.py`**:
 
-- **analytics_server.py:** Executes business logic and calculations using the project's internal JSON data files.
+- `LLM_MCP_URL`, `RAG_MCP_URL`, `SEARCH_MCP_URL`, `ANALYTICS_MCP_URL`
 
-## 3. Standard API Contract
-All MCP servers expose a single, consistent endpoint for tool invocation.
+On OpenShift these resolve to in-cluster Services (e.g. `http://rag-server:8002`).
 
-```http
-Endpoint: POST /invoke
+## 3. Server overview
 
-Generic Request Body
-The request body follows a simple ToolInput model:
+| File | Health | Backend |
+|------|--------|---------|
+| `mcp_servers/llm_server.py` | `GET /healthz` | kServe via OpenAI client (`LLM_API_BASE`) |
+| `mcp_servers/rag_server.py` | `GET /healthz` | Milvus (`rag/service.py`) |
+| `mcp_servers/search_server.py` | `GET /healthz` | Tavily API |
+| `mcp_servers/analytics_server.py` | `GET /healthz` | `data/*.json` |
 
+## 4. API contract
+
+### Tool-based servers (RAG, Search, Analytics)
+
+**Endpoint:** `POST /invoke`
+
+**Request:**
+
+```json
 {
-  "tool_name": "name_of_the_tool_to_run",
+  "tool_name": "name_of_the_tool",
   "input_data": {
-    "parameter1": "value1",
-    "parameter2": "value2"
-  }
-}
-
-Generic Response Body
-The response body follows a standard ToolOutput model:
-
-{
-  "status": "success",
-  "result": {
-    "output_key_1": "output_value_1",
-    "output_key_2": "output_value_2"
+    "parameter1": "value1"
   }
 }
 ```
 
-## 4. Server-Specific Examples
-### Analytics Server
-```http
-Request:
+**Response:**
 
+```json
+{
+  "status": "success",
+  "result": { }
+}
+```
+
+`result` shape varies by tool (object or array).
+
+### LLM server
+
+**Endpoint:** `POST /invoke`
+
+**Request:**
+
+```json
+{
+  "prompt": "Your prompt here"
+}
+```
+
+**Response:**
+
+```json
+{
+  "response": "Generated text"
+}
+```
+
+## 5. Server tools
+
+### Analytics server
+
+| Tool | input_data | Description |
+|------|------------|-------------|
+| `get_total_inventory_value` | `{}` | Sum of stock value across products |
+| `get_product_count_by_brand` | `brand_name` | Count products by brand |
+| `get_product_details` | `product_id` | Product record from JSON |
+| `get_demand_analytics` | `product_id` | Derived demand metrics |
+
+**Example:**
+
+```json
 {
   "tool_name": "get_total_inventory_value",
   "input_data": {}
 }
-
-Response:
-
-{
-  "status": "success",
-  "result": {
-    "total_stock_value_zar": 2375.0,
-    "total_product_count": 3,
-    "average_value_per_product": 791.67
-  }
-}
 ```
-### Search Server
-```http
-Request:
 
+### Search server
+
+| Tool | input_data | Description |
+|------|------------|-------------|
+| `web_search` | `query`, optional `max_results` | Tavily web search |
+
+Returns array of `{title, url, content}`. Falls back to placeholder results if `TAVILY_API_KEY` is unset.
+
+**Example:**
+
+```json
 {
   "tool_name": "web_search",
   "input_data": {
     "query": "latest fashion trends in south africa"
   }
 }
-
-Response:
-
-{
-  "status": "success",
-  "result": [
-    {
-      "title": "Latest Winter Fashion Trends in South Africa - Fashion Weekly",
-      "url": "[https://fake-fashion-weekly.com/trends-sa-winter-2025](https://fake-fashion-weekly.com/trends-sa-winter-2025)",
-      "content": "This winter in South Africa, expect to see a rise in 'utilitarian chic'..."
-    }
-  ]
-}
 ```
 
-### RAG Server
-```http
-Request:
+### RAG server
 
+| Tool | input_data | Description |
+|------|------------|-------------|
+| `retrieve_documents` | `query`, optional `top_k` | Milvus vector search |
+
+Returns array of `{source, content, score}`. Falls back to static docs if Milvus unavailable or `RAG_USE_FALLBACK=true`.
+
+**Example:**
+
+```json
 {
   "tool_name": "retrieve_documents",
   "input_data": {
-    "query": "internal reports on winter fashion sales"
-  }
-}
-
-Response:
-
-{
-  "status": "success",
-  "result": [
-    {
-      "source": "docs/Q4_2024_Sales_Report.pdf",
-      "content": "Sales of outerwear, particularly wool coats, increased by 45% in Q4...",
-      "score": 0.91
-    }
-  ]
-}
-```
-### LLM Server
-```http
-Request:
-
-{
-  "tool_name": "generate_text",
-  "input_data": {
-    "prompt": "Summarize the following report for a marketing executive: ..."
-  }
-}
-
-Response:
-
-{
-  "status": "success",
-  "result": {
-    "text": "The Q4 2024 Sales Report highlights a significant 45% increase in outerwear sales, driven primarily by strong performance in the wool coat category..."
+    "query": "winter fashion trends professional women",
+    "top_k": 5
   }
 }
 ```
+
+### LLM server
+
+Proxies to the OpenAI-compatible endpoint configured in `LLM_API_BASE` / `LLM_MODEL_NAME`.
+
+**Example:**
+
+```json
+{
+  "prompt": "Summarize Q4 outerwear performance for an executive."
+}
+```
+
+## 6. Configuration reference
+
+| Variable | Used by | Description |
+|----------|---------|-------------|
+| `LLM_MCP_URL` | Agents | LLM MCP service URL |
+| `LLM_API_BASE` | LLM MCP server | kServe `/v1` endpoint |
+| `LLM_API_KEY` | LLM MCP server | API token (often `not-needed` in-cluster) |
+| `LLM_MODEL_NAME` | LLM MCP server | Served model name |
+| `MILVUS_URI` | RAG service | Milvus connection |
+| `MILVUS_COLLECTION_NAME` | RAG service | Collection name |
+| `TAVILY_API_KEY` | Search server | Tavily authentication |
+| `TAVILY_MAX_RESULTS` | Search server | Max results per query |
+| `RAG_USE_FALLBACK` | RAG service | Skip Milvus; use static docs |
+
+## 7. Testing MCP servers locally
+
+```bash
+# Terminal 1–4: start servers
+uvicorn mcp_servers.llm_server:app --port 8001
+uvicorn mcp_servers.rag_server:app --port 8002
+uvicorn mcp_servers.search_server:app --port 8003
+uvicorn mcp_servers.analytics_server:app --port 8004
+
+# Health check
+curl http://127.0.0.1:8002/healthz
+
+# Invoke RAG
+curl -X POST http://127.0.0.1:8002/invoke \
+  -H "Content-Type: application/json" \
+  -d '{"tool_name":"retrieve_documents","input_data":{"query":"winter trends"}}'
+```
+
+Unit tests: `tests/unit/test_rag_server.py`, `test_search_server.py`, `test_mcp_client.py`.
+
+## 8. Related documentation
+
+- [ARCHITECTURE.md](ARCHITECTURE.md)
+- [DEPLOYMENT.md](DEPLOYMENT.md)

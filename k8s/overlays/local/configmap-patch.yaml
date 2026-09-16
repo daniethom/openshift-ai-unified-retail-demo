@@ -1,16 +1,11 @@
-# k8s/base/kustomization.yaml
-apiVersion: kustomize.config.k8s.io/v1beta1
-kind: Kustomization
-
-resources:
-- namespace.yaml
-- configmap.yaml
-- secret.yaml
-- llm-server-deployment.yaml
-- llm-server-service.yaml
-# - rag-server-deployment.yaml
-# - rag-server-service.yaml
-# - search-server-deployment.yaml
-# - search-server-service.yaml
-# - analytics-server-deployment.yaml
-# - analytics-server-service.yaml
+# k8s/overlays/local/configmap-patch.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mcp-servers-config
+  namespace: retail-ai-demo
+data:
+  # Point to your local or shared OpenAI-compatible endpoint when not using kServe.
+  LLM_API_BASE: "http://127.0.0.1:8080/v1"
+  MERIDIAN_DEBUG: "true"
+  MILVUS_COLLECTION_NAME: "meridian_knowledge"

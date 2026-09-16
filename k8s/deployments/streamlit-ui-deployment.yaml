@@ -24,3 +24,5 @@ spec:
         envFrom:
         - configMapRef:
             name: streamlit-ui-config
+        - configMapRef:
+            name: mcp-servers-config

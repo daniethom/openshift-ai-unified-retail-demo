@@ -17,8 +17,8 @@ ENV PATH="/opt/venv/bin:$PATH"
 WORKDIR /app
 COPY pyproject.toml .
 
-# Install all dependencies, including development ones for potential CI steps
-RUN uv pip install --system --no-cache -e ".[dev]"
+# Install runtime and model-download dependencies for the container image
+RUN uv pip install --system --no-cache -e ".[model]"
 
 
 # Stage 2: Final - Create the final, optimized image

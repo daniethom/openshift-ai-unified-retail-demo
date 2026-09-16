@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: analytics-server
+  namespace: retail-ai-demo
+  labels:
+    app: analytics-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: analytics-server
+  template:
+    metadata:
+      labels:
+        app: analytics-server
+    spec:
+      containers:
+      - name: analytics-server
+        image: image-registry.openshift-image-registry.svc:5000/retail-ai-demo/meridian-retail-ai:latest
+        command: ["uvicorn", "mcp_servers.analytics_server:app", "--host", "0.0.0.0", "--port", "8004"]
+        ports:
+        - containerPort: 8004
+        envFrom:
+        - configMapRef:
+            name: mcp-servers-config

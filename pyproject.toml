@@ -55,11 +55,15 @@ dev = [
     "ruff",
     "mypy",
 ]
+model = [
+    "huggingface_hub",
+]
 
 [tool.setuptools]
 # Specifies the packages to include in the distribution
 packages = [
     "agents",
+    "config",
     "mcp_servers",
     "streamlit_app",
     "rag",

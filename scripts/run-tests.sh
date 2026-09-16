@@ -65,8 +65,7 @@ fi
 
 info "Running ${TEST_TYPE} tests from path: ${TEST_PATH}"
 
-# Execute pytest with verbose output and code coverage analysis
-# The --cov=. flag tells pytest-cov to analyze coverage for the entire project.
+export RAG_USE_FALLBACK=true
 pytest -v --cov=. "${TEST_PATH}"
 
 success "All ${TEST_TYPE} tests passed successfully."

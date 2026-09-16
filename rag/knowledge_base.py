@@ -5,10 +5,11 @@ Manages the vector database and document storage
 
 import json
 import logging
-import os
 from datetime import datetime
 from typing import List, Dict, Any, Optional, Tuple
 from pathlib import Path
+
+from config.settings import settings
 
 from pymilvus import (
     connections,
@@ -31,8 +32,8 @@ class MilvusKnowledgeBase:
     
     def __init__(
         self,
-        host: str = "localhost",
-        port: int = 19530,
+        host: str | None = None,
+        port: int | None = None,
         collection_name: str = "meridian_knowledge",
         embedding_dim: int = 384,
         index_type: str = "IVF_FLAT",
@@ -49,8 +50,8 @@ class MilvusKnowledgeBase:
             index_type: Type of index to use
             metric_type: Distance metric type
         """
-        self.host = host
-        self.port = port
+        self.host = host or settings.milvus_host
+        self.port = port or settings.milvus_port
         self.collection_name = collection_name
         self.embedding_dim = embedding_dim
         self.index_type = index_type
