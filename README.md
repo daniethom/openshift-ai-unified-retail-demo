@@ -145,6 +145,8 @@ make demo-checklist-strict
 
 Presenter script and scenarios: [docs/DEMO_GUIDE.md](docs/DEMO_GUIDE.md)
 
+**Note:** The Streamlit **Dashboard** uses mock/illustrative analytics for presentation; **live data** is shown on the main chat, **Analytics** page, and **MCP Tools** page. See [DEMO_GUIDE.md §3](docs/DEMO_GUIDE.md#3-streamlit-ui-mock-vs-live-data).
+
 ## Configuration
 
 All settings load from environment variables via `config/settings.py`. Copy `.env.example` to `.env` for local use; on OpenShift use ConfigMaps and Secrets (see `k8s/base/configmap.yaml` and `k8s/base/secret.yaml`).

@@ -74,7 +74,9 @@ echo "        oc get job granite-model-download -n ${NAMESPACE}"
 echo "  [ ] Milvus priming completed:"
 echo "        oc get job milvus-primer-job -n ${NAMESPACE}"
 echo "  [ ] Browser bookmarked to Streamlit route (see section 3)"
-echo "  [ ] Backup demo queries copied (see section 6)"
+echo "  [ ] Backup demo queries copied (see section 7)"
+echo "  [ ] Presenter briefed: Dashboard charts/insights are MOCK data (see DEMO_GUIDE.md §3)"
+echo "        Live data: main chat + Analytics page + MCP Tools"
 
 section "2. Pod status"
 if oc get namespace "${NAMESPACE}" >/dev/null 2>&1; then
@@ -145,7 +147,24 @@ else
     info "InferenceService granite-vllm not found."
 fi
 
-section "6. Sample demo queries (paste into Streamlit)"
+section "6. Streamlit UI — mock vs live (presenter notes)"
+cat <<'EOF'
+  LIVE (safe to demo as real):
+    • Main chat (app) — multi-agent queries, LLM, RAG, Search, Analytics MCP
+    • Analytics page — PostgreSQL via Analytics MCP
+    • MCP Tools page — direct MCP health checks and invocations
+
+  MOCK / illustrative (do not claim as production telemetry):
+    • Dashboard — Query Analytics charts, Business Insights, Alerts
+    • Dashboard System Overview — mostly static/random demo metrics
+    • Dashboard Agent Performance — in-session counters only (not Postgres history)
+
+  Talking point: Dashboard shows executive monitoring visuals; chat + Analytics show the live stack.
+
+  Full detail: docs/DEMO_GUIDE.md (section 3)
+EOF
+
+section "7. Sample demo queries (paste into Streamlit)"
 cat <<'EOF'
   Scenario 1 — Fashion trends:
     What winter fashion trends should our Cape Town stores focus on for professional women?
@@ -160,7 +179,7 @@ cat <<'EOF'
     A high-value customer is complaining about a delayed delivery and poor service.
 EOF
 
-section "7. Useful commands during the demo"
+section "8. Useful commands during the demo"
 cat <<EOF
   Watch pods:        oc get pods -n ${NAMESPACE} -w
   Streamlit logs:    oc logs deployment/streamlit-ui -n ${NAMESPACE} -f
@@ -171,7 +190,7 @@ cat <<EOF
 EOF
 
 if [[ "${RUN_VALIDATE}" == "true" ]]; then
-    section "8. Automated validation"
+    section "9. Automated validation"
     if [[ "${SKIP_INFERENCE}" == "true" ]]; then
         "${PROJECT_ROOT}/scripts/validate-deployment.sh" --namespace "${NAMESPACE}" --skip-inference || ISSUES=$((ISSUES + 1))
     else

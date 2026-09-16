@@ -55,7 +55,25 @@ oc get route streamlit-ui -n retail-ai-demo
 
 ---
 
-## 3. Scenario walkthroughs
+## 3. Streamlit UI: mock vs live data
+
+The sidebar links to several pages. **Know which are real before you present** — especially if someone asks about the Dashboard charts.
+
+| Page | Data | Presenter note |
+|------|------|----------------|
+| **app** (main chat) | **Live** | Primary demo surface. Multi-agent queries use LLM, RAG, Search, and Analytics MCP against Postgres (when configured). |
+| **Dashboard** | **Mostly mock** | Query Analytics charts, Business Insights cards/table, and Alerts use **synthetic demo data** for visual impact. System Overview metrics are largely static/random. Agent Performance can show **in-session** agent counters if the chat app was used first in the same browser session — not historical Postgres data. |
+| **Agents** | **Mixed** | Live agent status when the crew is initialized; otherwise falls back to demo metrics. |
+| **Analytics** | **Live** | Inventory, customer, and product queries via Analytics MCP → PostgreSQL. Use this page to show **real retail data**. |
+| **MCP Tools** | **Live** | Direct MCP health checks and tool invocations (LLM, RAG, Search, Analytics). |
+
+**Suggested talking point:** *"The Dashboard illustrates operational monitoring for executives; the chat and Analytics pages show the live AI and data layer underneath."*
+
+**Do not claim** Dashboard query volumes, business insight rows, or alert notifications are pulled from production telemetry — they are intentional placeholders for the demo narrative.
+
+---
+
+## 4. Scenario walkthroughs
 
 ### Scenario 1: Strategic fashion trend analysis
 
@@ -123,7 +141,7 @@ A high-value customer is complaining about a delayed delivery and poor service.
 
 ---
 
-## 4. If something goes wrong during the demo
+## 5. If something goes wrong during the demo
 
 | Issue | Quick fix |
 |-------|-----------|
@@ -141,7 +159,7 @@ make validate
 
 ---
 
-## 5. Related documentation
+## 6. Related documentation
 
 - [DEPLOYMENT.md](DEPLOYMENT.md) — full deploy pipeline
 - [ARCHITECTURE.md](ARCHITECTURE.md) — system design
