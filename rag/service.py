@@ -72,6 +72,40 @@ def _insight_text(insight: dict[str, Any]) -> str:
 
 
 def build_knowledge_documents() -> list[dict[str, Any]]:
+    """Build searchable documents from PostgreSQL or seed JSON files."""
+    if not settings.use_json_fallback and settings.database_url:
+        import asyncio
+
+        from db.service import build_knowledge_documents as db_build
+
+        try:
+            asyncio.get_running_loop()
+        except RuntimeError:
+            raw_docs = asyncio.run(db_build())
+            return _format_db_documents(raw_docs)
+
+    return _build_knowledge_documents_from_json()
+
+
+def _format_db_documents(raw_docs: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    documents: list[dict[str, Any]] = []
+    for doc in raw_docs:
+        metadata = doc.get("metadata", {})
+        source = doc.get("source", "postgres")
+        doc_type = "product" if source == "products" else source.rstrip("s")
+        documents.append(
+            {
+                "id": doc.get("id", f"doc_{len(documents)}"),
+                "source": f"db/{source}",
+                "content": doc.get("content", ""),
+                "doc_type": doc_type,
+                "metadata": metadata,
+            }
+        )
+    return documents
+
+
+def _build_knowledge_documents_from_json() -> list[dict[str, Any]]:
     """Build searchable documents from project JSON data files."""
     documents: list[dict[str, Any]] = []
 
@@ -119,7 +153,9 @@ def fallback_documents(query: str, top_k: int = 3) -> list[dict[str, Any]]:
     query_lower = query.lower()
     ranked = sorted(
         DEFAULT_FALLBACK_DOCS,
-        key=lambda doc: int(any(token in doc["content"].lower() for token in query_lower.split())),
+        key=lambda doc: int(
+            any(token in doc["content"].lower() for token in query_lower.split())
+        ),
         reverse=True,
     )
     return ranked[:top_k]

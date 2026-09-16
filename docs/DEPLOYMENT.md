@@ -267,5 +267,42 @@ Set in `.env`:
 
 ```bash
 RAG_USE_FALLBACK=true   # Skip Milvus for UI-only testing
+USE_JSON_FALLBACK=true  # Read data/*.json instead of PostgreSQL
 LLM_API_BASE=http://127.0.0.1:8080/v1   # Your local or cloud LLM endpoint
 ```
+
+## PostgreSQL data layer
+
+Production deployments use in-cluster PostgreSQL as the system of record. JSON files under `data/` are seed input only.
+
+### Local PostgreSQL
+
+```bash
+docker run -d --name meridian-pg \
+  -e POSTGRES_DB=meridian \
+  -e POSTGRES_USER=meridian \
+  -e POSTGRES_PASSWORD=secret \
+  -p 5432:5432 postgres:16
+
+export DATABASE_URL="postgresql+asyncpg://meridian:secret@127.0.0.1:5432/meridian"
+make migrate-db
+make seed-db
+```
+
+Set `USE_JSON_FALLBACK=false` in `.env` so MCP servers and agents read from PostgreSQL.
+
+### OpenShift
+
+Base manifests include `postgres-pvc`, `postgres-deployment`, and `postgres-service`. ConfigMap sets `DATABASE_URL`; Secret holds `POSTGRES_PASSWORD` (must match the URL password).
+
+Recommended deploy sequence:
+
+```bash
+./scripts/deploy-openshift.sh --build --migrate-db --seed-db --validate
+```
+
+Jobs:
+
+- `db-migrate-job` — `alembic upgrade head`
+- `db-seed-job` — `python -m db.seed` (idempotent upsert from JSON)
+- `milvus-primer-job` — waits for PostgreSQL and Milvus before priming vectors

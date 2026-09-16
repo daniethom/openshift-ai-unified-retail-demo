@@ -7,6 +7,9 @@ resources:
   - configmap.yaml
   - streamlit-ui-config.yaml
   - secret.yaml
+  - postgres-pvc.yaml
+  - postgres-deployment.yaml
+  - postgres-service.yaml
   - milvus-pvc.yaml
   - milvus-deployment.yaml
   - milvus-service.yaml

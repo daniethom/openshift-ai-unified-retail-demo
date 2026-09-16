@@ -62,6 +62,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - `tests/unit/test_download_model.py`
 - Updated `test_trend_agent.py`, `test_rag_server.py`, `test_search_server.py`
 
+#### Phase 5 — Test coverage and PostgreSQL data layer
+- Stabilized unit/integration tests; CI enforces 75% coverage on core packages
+- `db/` package with SQLAlchemy models, Alembic migrations, JSON seed loader, repository layer
+- `DATABASE_URL`, `USE_JSON_FALLBACK`, and `DATA_PATH` in `config/settings.py`
+- Analytics MCP reads PostgreSQL via `db/service.py` with JSON fallback; added customer tools
+- Customer, inventory, and pricing agents use analytics MCP / real product IDs (`MF001`, etc.)
+- `rag/service.py` can build Milvus documents from PostgreSQL when configured
+- OpenShift PostgreSQL PVC/deployment/service plus `db-migrate-job` and `db-seed-job`
+- `scripts/deploy-openshift.sh` flags: `--migrate-db`, `--seed-db`
+- Makefile targets: `migrate-db`, `seed-db`, `test-cov`
+- Streamlit smoke tests; legacy `rag/knowledge_base.py` and `rag/retriever.py` marked deprecated
+
 ### Changed
 
 #### Phase 1 — Configuration

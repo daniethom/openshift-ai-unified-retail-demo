@@ -1,15 +1,17 @@
-import pytest
-from unittest.mock import MagicMock, AsyncMock
-import sys
 import os
+import sys
+from unittest.mock import AsyncMock, MagicMock
+
+import pytest
 
 # Add the project root to the path to allow importing the agents
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 
 from agents.home_agent import HomeAgent
 from agents.inventory_agent import InventoryAgent
 
 # --- Pytest Fixtures ---
+
 
 @pytest.fixture
 def mock_inventory_agent():
@@ -19,19 +21,20 @@ def mock_inventory_agent():
     """
     # Mock the dependencies of the InventoryAgent
     mock_data_store = MagicMock()
-    mock_mcp_servers = {} # Not needed for this specific test
-    
+    mock_mcp_servers = {}  # Not needed for this specific test
+
     # Create a real InventoryAgent instance
     agent = InventoryAgent(mcp_servers=mock_mcp_servers, data_store=mock_data_store)
-    
+
     # Spy on the process_query method using AsyncMock. This allows us to
     # track calls to it while still executing its real (or simplified) logic.
     # For this test, we'll have it return a predictable dictionary.
     agent.process_query = AsyncMock(
         return_value={"result": "mock inventory data", "status": "success"}
     )
-    
+
     return agent
+
 
 @pytest.fixture
 def home_agent_with_mock_crew(mock_inventory_agent):
@@ -46,18 +49,22 @@ def home_agent_with_mock_crew(mock_inventory_agent):
         "CustomerAgent": MagicMock(),
         "TrendAgent": MagicMock(),
     }
-    
+
     # The home agent's own dependencies can be simple mocks for this test
     home_mcp_servers = {}
-    
+
     # Create a real HomeAgent instance with the mocked crew
     agent = HomeAgent(mcp_servers=home_mcp_servers, agent_registry=agent_registry)
     return agent
 
+
 # --- Integration Test Case ---
 
+
 @pytest.mark.asyncio
-async def test_home_agent_orchestrates_simple_inventory_query(home_agent_with_mock_crew, mock_inventory_agent):
+async def test_home_agent_orchestrates_simple_inventory_query(
+    home_agent_with_mock_crew, mock_inventory_agent
+):
     """
     Tests the integration between HomeAgent and InventoryAgent.
     It verifies that the HomeAgent correctly analyzes a simple inventory query,
@@ -66,10 +73,10 @@ async def test_home_agent_orchestrates_simple_inventory_query(home_agent_with_mo
     # Arrange: A simple query that should be routed to the InventoryAgent
     query = "check stock for product 123"
     context = {}
-    
+
     # Act: Call the main processing method on the orchestrator
     final_result = await home_agent_with_mock_crew.process_query(query, context)
-    
+
     # Assert
     # 1. Verify that the HomeAgent's routing logic worked and it called the InventoryAgent
     mock_inventory_agent.process_query.assert_awaited_once()

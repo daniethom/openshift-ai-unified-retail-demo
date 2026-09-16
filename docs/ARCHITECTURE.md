@@ -2,7 +2,7 @@
 
 ## 1. Introduction
 
-The Meridian Retail AI demo is a multi-agent platform for retail operations on Red Hat OpenShift AI. Specialized CrewAI agents collaborate through a standardized MCP (Model Context Protocol) layer. Backend services include Milvus RAG, Tavily search, JSON analytics data, and Granite served via kServe/vLLM.
+The Meridian Retail AI demo is a multi-agent platform for retail operations on Red Hat OpenShift AI. Specialized CrewAI agents collaborate through a standardized MCP (Model Context Protocol) layer. Backend services include PostgreSQL (system of record), Milvus RAG, Tavily search, and Granite served via kServe/vLLM. JSON files under `data/` are seed input only.
 
 ## 2. Architecture diagram
 
@@ -36,7 +36,8 @@ graph TB
         KSERVE[kServe / vLLM Granite]
         MILVUS[Milvus Standalone]
         TAVILY[Tavily API]
-        DATA[JSON Data Files]
+        DATA[(PostgreSQL)]
+        SEED[JSON Seed Files]
         RAGSVC[rag/service.py]
     end
 
@@ -55,6 +56,7 @@ graph TB
     MCP_RAG --> RAGSVC --> MILVUS
     MCP_SEARCH --> TAVILY
     MCP_ANALYTICS --> DATA
+    SEED -.-> DATA
     KSERVE --> GPU
     MCPLayer --> K8S
     ST --> K8S
@@ -93,13 +95,13 @@ Four FastAPI microservices in `mcp_servers/`:
 | `llm_server.py` | 8001 | OpenAI-compatible kServe endpoint |
 | `rag_server.py` | 8002 | Milvus via `rag/service.py` |
 | `search_server.py` | 8003 | Tavily API |
-| `analytics_server.py` | 8004 | JSON files in `data/` |
+| `analytics_server.py` | 8004 | PostgreSQL via `db/service.py` (JSON fallback) |
 
 Each exposes `POST /invoke` (LLM also uses `{"prompt": "..."}`) and `GET /healthz`.
 
 ### 3.5 RAG subsystem
 
-- **`rag/service.py`** — indexing and retrieval; builds documents from JSON data files
+- **`rag/service.py`** — indexing and retrieval; builds documents from PostgreSQL or JSON seed files
 - **`scripts/prime_database.py`** — populates Milvus collection `meridian_knowledge`
 - **Fallback** — static documents when `RAG_USE_FALLBACK=true` or Milvus is unavailable
 
@@ -107,14 +109,15 @@ Each exposes `POST /invoke` (LLM also uses `{"prompt": "..."}`) and `GET /health
 
 - **Milvus** — deployed as standalone in `k8s/base/milvus-*.yaml`
 - **Tavily** — external search API; key in Secret
-- **JSON data** — products, trends, market insights, customers
+- **PostgreSQL** — relational system of record (`db/` package, Alembic migrations, seed Job)
+- **JSON seed files** — offline fallback and initial load via `db/seed.py`
 - **Granite LLM** — kServe InferenceService in production overlay
 
 ### 3.7 OpenShift AI platform
 
 - **Kustomize** — `k8s/base/` + overlays (`local`, `production`)
 - **Routes** — Streamlit UI; optional Granite API route
-- **Jobs** — Milvus priming, Granite model download
+- **Jobs** — database migrate/seed, Milvus priming, Granite model download
 - **BuildConfig** — on-cluster image builds
 - **CI** — GitHub Actions lint, test, Docker build
 

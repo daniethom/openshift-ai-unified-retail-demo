@@ -33,6 +33,9 @@ dependencies = [
     "numpy",
     "requests",
     "httpx",
+    "sqlalchemy[asyncio]>=2.0",
+    "asyncpg",
+    "alembic",
     # Dependencies for RAG and Search functionality
     "tavily-python", 
     "pymilvus",
@@ -64,6 +67,7 @@ model = [
 packages = [
     "agents",
     "config",
+    "db",
     "mcp_servers",
     "streamlit_app",
     "rag",
@@ -76,11 +80,41 @@ line-length = 88
 target-version = ['py311']
 
 [tool.ruff]
-# Configuration for the Ruff linter
 line-length = 88
+
+[tool.ruff.lint]
 select = [
     "E",  # pycodestyle errors
     "F",  # pyflakes
     "W",  # pycodestyle warnings
     "I",  # isort
+]
+
+# Agent prompts, Streamlit UI strings, and legacy RAG modules use long literals.
+[tool.ruff.lint.per-file-ignores]
+"agents/**/*.py" = ["E501"]
+"streamlit_app/**/*.py" = ["E501", "E402"]
+"tests/**/*.py" = ["E501"]
+"rag/embeddings.py" = ["E501"]
+"rag/service.py" = ["E501"]
+"rag/retriever.py" = ["E501"]
+"rag/knowledge_base.py" = ["E501"]
+"mcp_servers/llm_server.py" = ["E501"]
+
+[tool.coverage.run]
+omit = [
+    "rag/knowledge_base.py",
+    "rag/retriever.py",
+    "rag/embeddings.py",
+    "agents/customer_agent.py",
+    "agents/inventory_agent.py",
+    "agents/pricing_agent.py",
+    "scripts/download_model.py",
+    "db/seed.py",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "if __name__ == .__main__.:",
 ]

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import os
 from dataclasses import dataclass
+from pathlib import Path
 
 try:
     from dotenv import load_dotenv
@@ -62,6 +63,9 @@ class Settings:
     log_level: str
     meridian_debug: bool
     openshift_namespace: str
+    database_url: str
+    use_json_fallback: bool
+    data_path: str
 
     @classmethod
     def from_env(cls) -> Settings:
@@ -77,6 +81,9 @@ class Settings:
         llm_api_base = _env("LLM_API_BASE") or _env(
             "GRANITE_ENDPOINT", "http://127.0.0.1:8080"
         )
+
+        project_root = Path(__file__).resolve().parents[1]
+        data_path = _env("DATA_PATH") or str(project_root / "data")
 
         return cls(
             llm_mcp_url=_env("LLM_MCP_URL", f"http://127.0.0.1:{llm_port}"),
@@ -99,6 +106,9 @@ class Settings:
             log_level=_env("LOG_LEVEL", "INFO"),
             meridian_debug=_env_bool("MERIDIAN_DEBUG", False),
             openshift_namespace=_env("OPENSHIFT_NAMESPACE", "retail-ai-demo"),
+            database_url=_env("DATABASE_URL"),
+            use_json_fallback=_env_bool("USE_JSON_FALLBACK", False),
+            data_path=data_path,
         )
 
     def mcp_servers_config(self) -> dict[str, dict[str, str]]:

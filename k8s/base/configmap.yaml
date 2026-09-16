@@ -36,3 +36,5 @@ data:
   OPENSHIFT_NAMESPACE: "retail-ai-demo"
   LOG_LEVEL: "INFO"
   MERIDIAN_DEBUG: "false"
+  DATABASE_URL: "postgresql+asyncpg://meridian:change-me@postgres-service:5432/meridian"
+  USE_JSON_FALLBACK: "false"

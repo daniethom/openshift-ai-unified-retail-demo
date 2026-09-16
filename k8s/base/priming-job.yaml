@@ -7,6 +7,16 @@ spec:
   template:
     spec:
       initContainers:
+        - name: wait-for-postgres
+          image: postgres:16
+          command:
+            - sh
+            - -c
+            - |
+              until pg_isready -h postgres-service -p 5432 -U meridian; do
+                echo "Waiting for PostgreSQL..."
+                sleep 5
+              done
         - name: wait-for-milvus
           image: curlimages/curl:8.7.1
           command:
