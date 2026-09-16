@@ -23,13 +23,25 @@ fi
 start_server() {
   local module="$1"
   local port="$2"
-  if lsof -i ":${port}" -sTCP:LISTEN >/dev/null 2>&1; then
-    echo "Port ${port} already in use (${module})"
+  local log="${ROOT}/.local/${module//./-}-${port}.log"
+
+  if curl -sf "http://127.0.0.1:${port}/healthz" >/dev/null 2>&1; then
+    echo "Port ${port} healthy (${module})"
     return 0
   fi
-  echo "Starting ${module} on port ${port}..."
+
+  local pid
+  pid="$(lsof -ti ":${port}" -sTCP:LISTEN 2>/dev/null || true)"
+  if [[ -n "${pid}" ]]; then
+    echo "Port ${port} unhealthy; restarting ${module}..."
+    kill "${pid}" 2>/dev/null || true
+    sleep 1
+  else
+    echo "Starting ${module} on port ${port}..."
+  fi
+
   nohup "$UVICORN" "${module}:app" --host 127.0.0.1 --port "${port}" --log-level warning \
-    > "${ROOT}/.local/${module//./-}-${port}.log" 2>&1 &
+    > "${log}" 2>&1 &
 }
 
 mkdir -p "${ROOT}/.local"
